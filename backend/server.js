@@ -4,6 +4,7 @@ const express = require("express");
 const connectDB = require("./config/db");
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 const { sendEmail } = require("./config/mailers");
+const userRoutes = require("./routes/userRoutes");
 
 // creating server
 const app = express();
@@ -16,6 +17,13 @@ connectDB();
 
 // accepting data in JSON
 app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("hello from server.");
+});
+
+// userRoutes
+app.use("/user", userRoutes);
 
 // handling errors like not found and other erros
 app.use(notFound);

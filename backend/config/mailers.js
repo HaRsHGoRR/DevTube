@@ -2,7 +2,7 @@ require("dotenv").config();
 const nodemailer = require("nodemailer");
 const generateOtp = require("./generateOtp");
 
-const sendEmail = async (email) => {
+const mailer = async (email) => {
   try {
     const otp = generateOtp();
 
@@ -26,6 +26,7 @@ const sendEmail = async (email) => {
 
     return {
       status: "success",
+      otp: otp,
     };
   } catch (error) {
     console.error("Error sending email:", error);
@@ -36,4 +37,4 @@ const sendEmail = async (email) => {
   }
 };
 
-module.exports = { sendEmail };
+module.exports = { mailer };
