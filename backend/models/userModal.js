@@ -6,7 +6,6 @@ const UserSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
     },
     email: {
       type: String,
@@ -30,26 +29,11 @@ const UserSchema = new mongoose.Schema(
 
     history: [
       {
-        videoId: {
-          type: String,
-          required: true,
-        },
-        timeCompleted: {
-          hours: {
-            type: Number,
-            default: 0,
-          },
-          minutes: {
-            type: Number,
-            default: 0,
-          },
-          seconds: {
-            type: Number,
-            default: 0,
-          },
-        },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "DevTubeVideoData",
       },
     ],
+
     watchLater: {
       type: [String],
     },

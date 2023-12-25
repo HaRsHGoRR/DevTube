@@ -26,7 +26,7 @@ const DevTubeVideoDataSchema = new mongoose.Schema({
 });
 
 const DevTubeVideoData = mongoose.model(
-  "DevTubeVideoDataSchema",
+  "DevTubeVideoData",
   DevTubeVideoDataSchema
 );
 

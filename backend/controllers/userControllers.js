@@ -6,6 +6,8 @@ const generateToken = require("../config/generateToken");
 const bcrypt = require("bcryptjs");
 const { mailer } = require("../config/mailers");
 
+// user crud apis
+
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, img } = req.body;
 
@@ -34,6 +36,10 @@ const registerUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       img: user.img,
+      subscribers: user.subscribers,
+      subscribedUsers: user.subscribedUsers,
+      history: user.history,
+      watchLater: user.watchLater,
       token: generateToken(user._id),
     });
   } else {
@@ -55,18 +61,69 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   if (user && (await user.mathchPassword(password))) {
-    res.json({
+    res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       img: user.img,
+      subscribers: user.subscribers,
+      subscribedUsers: user.subscribedUsers,
+      history: user.history,
+      watchLater: user.watchLater,
       token: generateToken(user._id),
     });
   } else {
-    res.status(404);
+    res.status(400);
     throw new Error("Invalid Details");
   }
 });
+
+const updateUser = asyncHandler(async (req, res) => {
+  const data = req.body;
+
+  try {
+    const updatedUser = await DevTubeUser.findByIdAndUpdate(
+      req.user._id,
+      {
+        $set: data,
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(400);
+    throw new Error("Can not Update User.");
+  }
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+  try {
+    await DevTubeUser.findByIdAndDelete(req.user._id);
+
+    res.status(200).json({
+      status: "DELETED",
+    });
+  } catch (err) {
+    res.status(400);
+    throw new Error("Can not Delete User.");
+  }
+});
+
+const findUser = asyncHandler(async (req, res) => {
+  try {
+    const user = await DevTubeUser.findById(req.params.id).select("-password");
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(400);
+    throw new Error("Can not Find User.");
+  }
+});
+
+// email send verify and reset forgot password
 
 const sendEmail = asyncHandler(async (req, res) => {
   const { email, code } = req.body;
@@ -187,6 +244,95 @@ const resetpassword = asyncHandler(async (req, res) => {
   }
 });
 
+// like dislike sub and unsub
+
+const subscribe = asyncHandler(async (req, res) => {
+  try {
+    const updateSubcriber = await DevTubeUser.findByIdAndUpdate(
+      req.user._id,
+      {
+        $push: { subscribedUsers: req.params.id },
+      },
+      { new: true }
+    );
+
+    const updateCreator = await DevTubeUser.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { subscribers: req.user._id },
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json({ status: "Subscription Successful" });
+  } catch (error) {
+    res.status(400);
+    throw new Error("Can not Subscribe to User.");
+  }
+});
+
+const unsubscribe = asyncHandler(async (req, res) => {
+  try {
+    const updateSubcriber = await DevTubeUser.findByIdAndUpdate(
+      req.user._id,
+      {
+        $pull: { subscribedUsers: req.params.id },
+      },
+      { new: true }
+    );
+
+    const updateCreator = await DevTubeUser.findByIdAndUpdate(
+      req.params.id,
+      {
+        $pull: { subscribers: req.user._id },
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json({ status: "Unsubscription Successful" });
+  } catch (error) {
+    res.status(400);
+    throw new Error("Can not Unsubscribe to User.");
+  }
+});
+
+const like = asyncHandler(async (req, res) => {
+  try {
+  } catch (error) {}
+});
+
+const dislike = asyncHandler(async (req, res) => {
+  try {
+  } catch (error) {}
+});
+
+// watch later apis
+
+const addWatchLater = asyncHandler(async (req, res) => {
+  try {
+  } catch (error) {}
+});
+
+const updateWatchLater = asyncHandler(async (req, res) => {
+  try {
+  } catch (error) {}
+});
+
+const fetchWatchLater = asyncHandler(async (req, res) => {
+  try {
+  } catch (error) {}
+});
+
+const deleteWatchLater = asyncHandler(async (req, res) => {
+  try {
+  } catch (error) {}
+});
+
+
 
 
 module.exports = {
@@ -196,4 +342,15 @@ module.exports = {
   verifyEmail,
   forgotpassword,
   resetpassword,
+  updateUser,
+  deleteUser,
+  findUser,
+  subscribe,
+  unsubscribe,
+  like,
+  dislike,
+  deleteWatchLater,
+  fetchWatchLater,
+  updateWatchLater,
+  addWatchLater,
 };

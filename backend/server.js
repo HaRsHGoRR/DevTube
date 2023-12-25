@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 const { sendEmail } = require("./config/mailers");
 const userRoutes = require("./routes/userRoutes");
+const videoRoutes = require("./routes/videoRoutes");
 
 // creating server
 const app = express();
@@ -24,6 +25,9 @@ app.get("/", (req, res) => {
 
 // userRoutes
 app.use("/user", userRoutes);
+
+// videoRoutes
+app.use("/video", videoRoutes);
 
 // handling errors like not found and other erros
 app.use(notFound);

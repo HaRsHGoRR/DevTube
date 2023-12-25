@@ -9,6 +9,7 @@ const connectDB = async () => {
       `server/config/db.js:CONNECTED TO DATABASE SUCCESSFULLY`.bgGreen
     );
   } catch (error) {
+    console.log(error);
     console.log(`server/config/db.js:FAILED CONNECT TO DATABASE`.bgRed);
     process.exit();
   }
