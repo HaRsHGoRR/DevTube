@@ -5,8 +5,28 @@ const asyncHandler = require("express-async-handler");
 const generateToken = require("../config/generateToken");
 const bcrypt = require("bcryptjs");
 const { mailer } = require("../config/mailers");
+const DevTubeVideo = require("../models/videoModal");
+const jwt = require("jsonwebtoken");
+
 
 // user crud apis
+const authenticateUser=asyncHandler(async(req,res)=>{
+    const {token}=req.body
+  try {
+      const decoded = jwt.verify(token, process.env.JWT_KEY);
+      console.log(decoded);
+    const data = await DevTubeUser.findById(decoded.id).select("-password");
+
+    if(data){
+    res.status(200).json({ status: "SUCCESS" });
+
+    }
+
+
+  } catch (error) {
+     res.status(400).json({ status: "FAIL" });
+  }
+})
 
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, img } = req.body;
@@ -314,28 +334,154 @@ const dislike = asyncHandler(async (req, res) => {
 
 const addWatchLater = asyncHandler(async (req, res) => {
   try {
-  } catch (error) {}
+    const videoId = req.params.id;
+    const userId = req.user._id;
+
+    const video = await DevTubeVideo.findById(videoId);
+
+    if (!video) {
+      res.status(404);
+      throw new Error("Can not find Video.");
+    }
+
+    const findVideo = await DevTubeUser.findById(userId).populate({
+      path: "watchLater",
+    });
+
+     const isVideoInWatchLater = findVideo.watchLater.some((watchLaterVideo) =>
+       watchLaterVideo._id.equals(videoId)
+     );
+
+
+    if (isVideoInWatchLater) {
+      res.status(200).json(findVideo.watchLater);
+    } else {
+      const user = await DevTubeUser.findByIdAndUpdate(
+        userId,
+        {
+          $push: {
+            watchLater: {
+              $each: [videoId],
+              $position: 0,
+            },
+          },
+        },
+        { new: true }
+      ).populate({
+        path: "watchLater",
+      });
+
+      if (user) {
+        res.status(200).json(user.watchLater);
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+    throw new Error("Can not add video to watch later.");
+  }
 });
 
 const updateWatchLater = asyncHandler(async (req, res) => {
   try {
-  } catch (error) {}
+    const videoId = req.params.id;
+    const userId = req.user._id;
+
+    const video = await DevTubeVideo.findById(videoId);
+
+    if (!video) {
+      res.status(404);
+      throw new Error("Can not find Video.");
+    }
+
+    const user = await DevTubeUser.findByIdAndUpdate(
+      userId,
+      {
+        $pull: { watchLater: videoId },
+      },
+      { new: true }
+    ).populate({ path: "watchLater" });
+
+    if (user) {
+      res.status(200).json(user.watchLater);
+    }
+  } catch (error) {
+    res.status(500);
+    throw new Error("Can not remove video from watch later.");
+  }
 });
 
 const fetchWatchLater = asyncHandler(async (req, res) => {
   try {
-  } catch (error) {}
+    const userId = req.user._id;
+    const wacthLaterVideos = await DevTubeUser.findById(userId).populate({
+      path: "watchLater",
+    });
+
+    res.status(200).json(wacthLaterVideos.watchLater);
+  } catch (error) {
+    res.status(500);
+    throw new Error("Can not load watch later.");
+  }
 });
 
 const deleteWatchLater = asyncHandler(async (req, res) => {
   try {
-  } catch (error) {}
+    const userId = req.user._id;
+    const user = await DevTubeUser.findByIdAndUpdate(
+      userId,
+      {
+        $set: { watchLater: [] },
+      },
+      { new: true }
+    );
+    res.status(200).json(user.watchLater);
+  } catch (error) {
+    res.status(500);
+    throw new Error("Can not delete watch later.");
+  }
 });
 
-
-
+// history apis
+const fetchUserHistory = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const userHistory = await DevTubeUser.findById(userId)
+      .populate({
+        path: "history",
+        model: "DevTubeVideoData", // Assuming the name of the model is 'DevTubeVideoData'
+        options: { sort: { updatedAt: -1 } }, // Sort by 'updatedAt' in descending order
+        populate: {
+          path: "videoId",
+          model: "DevTubeVideo", // Assuming the name of the model is 'DevTubeVideo'
+        },
+      })
+      .select("-password"); // Exclude the 'password' field
+    res.status(200).json(userHistory.history);
+  } catch (error) {
+    res.status(500);
+    throw new Error("Can not load History.");
+  }
+});
+const deleteUserHistory = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const deleteHistory = await DevTubeUser.updateOne(
+      { _id: userId },
+      { $set: { history: [] } }
+    );
+    if (deleteHistory) {
+      res.status(200).json([]);
+    }
+  } catch (error) {
+    res.status(500);
+    throw new Error("Can not delete History.");
+  }
+});
 
 module.exports = {
+  deleteUserHistory,
+  fetchUserHistory,
   registerUser,
   loginUser,
   sendEmail,
@@ -353,4 +499,5 @@ module.exports = {
   fetchWatchLater,
   updateWatchLater,
   addWatchLater,
+  authenticateUser,
 };

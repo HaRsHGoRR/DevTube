@@ -34,9 +34,12 @@ const UserSchema = new mongoose.Schema(
       },
     ],
 
-    watchLater: {
-      type: [String],
-    },
+    watchLater: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "DevTubeVideo",
+      },
+    ],
   },
   { timestamps: true }
 );

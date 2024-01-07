@@ -11,6 +11,8 @@ const {
   sub,
   tag,
   search,
+  fetchVideos,
+  addTime,
 } = require("../controllers/videoControllers");
 
 const router = express.Router();
@@ -18,7 +20,8 @@ const router = express.Router();
 // crud on video
 router.post("/", protect, addVideo);
 router.put("/update/:id", protect, updateVideo);
-router.put("/delete/:id", protect, deleteVideo);
+router.delete("/delete/:id", protect, deleteVideo);
+router.get("/", protect, fetchVideos);
 router.get("/find/:id", protect, findVideo);
 
 // adding view
@@ -30,5 +33,8 @@ router.get("/random", protect, random);
 router.get("/sub", protect, sub);
 router.get("/tags", protect, tag);
 router.get("/search", protect, search);
+
+// updating time
+router.post("/time/:id",protect,addTime)
 
 module.exports = router;

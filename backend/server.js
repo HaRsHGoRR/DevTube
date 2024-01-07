@@ -6,6 +6,7 @@ const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 const { sendEmail } = require("./config/mailers");
 const userRoutes = require("./routes/userRoutes");
 const videoRoutes = require("./routes/videoRoutes");
+const commentRoutes = require("./routes/commentRoutes");
 
 // creating server
 const app = express();
@@ -29,6 +30,8 @@ app.use("/user", userRoutes);
 // videoRoutes
 app.use("/video", videoRoutes);
 
+// commentRoutes
+app.use("/comment", commentRoutes);
 // handling errors like not found and other erros
 app.use(notFound);
 app.use(errorHandler);

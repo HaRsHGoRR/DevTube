@@ -17,10 +17,16 @@ const {
   fetchWatchLater,
   updateWatchLater,
   deleteWatchLater,
+  fetchUserHistory,
+  deleteUserHistory,
+  authenticateUser,
 } = require("../controllers/userControllers");
 const { protect } = require("../middlewares/authorization");
 
 const router = express.Router();
+// authenticate user
+router.post("/authenticate", authenticateUser);
+
 
 // /user api
 router.post("/register", registerUser);
@@ -35,7 +41,6 @@ router.put("/unsub/:id", protect, unsubscribe);
 router.put("/like/:videoId", protect, like);
 router.put("/dislike/:videoId", protect, dislike);
 
-
 // email sending and verifing api
 router.post("/sendemail", sendEmail);
 router.post("/verifyemail", verifyEmail);
@@ -44,11 +49,15 @@ router.post("/verifyemail", verifyEmail);
 router.put("/forgotpassword", forgotpassword);
 router.put("/resetpassword", protect, resetpassword);
 
-
 // watch later apis
-router.post("/watch", protect, addWatchLater);
+router.post("/watch/:id", protect, addWatchLater);
 router.get("/watch", protect, fetchWatchLater);
-router.put("/watch", protect, updateWatchLater);
+router.put("/watch/:id", protect, updateWatchLater);
 router.delete("/watch", protect, deleteWatchLater);
+
+// history apis
+
+router.get("/history", protect, fetchUserHistory);
+router.delete("/history", protect, deleteUserHistory);
 
 module.exports = router;
