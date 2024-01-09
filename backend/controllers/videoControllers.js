@@ -21,7 +21,7 @@ const fetchVideos = asyncHandler(async (req, res) => {
 const addVideo = asyncHandler(async (req, res) => {
   try {
     const data = req.body;
-
+    data.tags = JSON.parse(data.tags);
     const newVideo = new VideoModal({ userId: req.user._id, ...data });
 
     const savedVideo = await newVideo.save();
@@ -37,6 +37,8 @@ const addVideo = asyncHandler(async (req, res) => {
 
 const updateVideo = asyncHandler(async (req, res) => {
   try {
+    const data = req.body;
+    data.tags = JSON.parse(data.tags);
     const video = await VideoModal.findById(req.params.id);
 
     if (!video) {
@@ -50,7 +52,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     } else {
       const updatedVideo = await VideoModal.findByIdAndUpdate(
         req.params.id,
-        { $set: req.body },
+        { $set: data },
         { new: true }
       );
       if (updatedVideo) {
@@ -133,9 +135,8 @@ const addView = asyncHandler(async (req, res) => {
       if (
         !user.history.some((item) => String(item.videoId._id) == videoIdString)
       ) {
-        videoData.timeCompleted.hours = 0;
-        videoData.timeCompleted.minutes = 0;
-        videoData.timeCompleted.seconds = 0;
+        videoData.timeCompleted = 0;
+
         videoData.updatedAt = new Date();
         await videoData.save();
         user.history.push(videoData);
@@ -234,16 +235,14 @@ const search = asyncHandler(async (req, res) => {
 const addTime = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const videoId = req.params.id;
-  const { hour, min, second } = req.body;
+  const { second } = req.body;
 
   try {
     const findVideoData = await DevTubeVideoData.findOneAndUpdate(
       { userId, videoId },
       {
         $set: {
-          "timeCompleted.hours": hour,
-          "timeCompleted.minutes": min,
-          "timeCompleted.seconds": second,
+          timeCompleted: second,
         },
       },
       { new: true }

@@ -12,18 +12,8 @@ const DevTubeVideoDataSchema = new mongoose.Schema(
       required: true,
     },
     timeCompleted: {
-      hours: {
-        type: Number,
-        default: 0,
-      },
-      minutes: {
-        type: Number,
-        default: 0,
-      },
-      seconds: {
-        type: Number,
-        default: 0,
-      },
+      type: Number,
+      default: 0,
     },
   },
   {

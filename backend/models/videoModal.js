@@ -39,18 +39,8 @@ const VideoSchema = new mongoose.Schema(
       default: [],
     },
     length: {
-      hours: {
-        type: Number,
-        default: 0,
-      },
-      minutes: {
-        type: Number,
-        default: 0,
-      },
-      seconds: {
-        type: Number,
-        default: 0,
-      },
+      type: Number,
+      default: 0,
     },
   },
   {

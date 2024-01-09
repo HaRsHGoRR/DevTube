@@ -5,6 +5,11 @@ const PlaylistSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  desc: {
+    type: String,
+    required: true,
+    default: "",
+  },
   userId: {
     type: String,
     required: true,
@@ -12,7 +17,8 @@ const PlaylistSchema = new mongoose.Schema({
   videos: [
     {
       videoId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "DevTubeVideo", // Reference to DevTubeVideo model
         required: true,
       },
       timeAdded: {

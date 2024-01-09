@@ -7,6 +7,7 @@ const { sendEmail } = require("./config/mailers");
 const userRoutes = require("./routes/userRoutes");
 const videoRoutes = require("./routes/videoRoutes");
 const commentRoutes = require("./routes/commentRoutes");
+const playlistRoutes=require("./routes/playlistRoutes")
 
 // creating server
 const app = express();
@@ -32,6 +33,10 @@ app.use("/video", videoRoutes);
 
 // commentRoutes
 app.use("/comment", commentRoutes);
+
+// playlistRoutes
+app.use("/playlist",playlistRoutes);
+
 // handling errors like not found and other erros
 app.use(notFound);
 app.use(errorHandler);
