@@ -11,8 +11,7 @@ const {
   findUser,
   subscribe,
   unsubscribe,
-  dislike,
-  like,
+  
   addWatchLater,
   fetchWatchLater,
   updateWatchLater,
@@ -20,6 +19,7 @@ const {
   fetchUserHistory,
   deleteUserHistory,
   authenticateUser,
+  analysis,
 } = require("../controllers/userControllers");
 const { protect } = require("../middlewares/authorization");
 
@@ -35,11 +35,9 @@ router.put("/update", protect, updateUser);
 router.delete("/delete", protect, deleteUser);
 router.get("/find/:id", protect, findUser);
 
-// user action api like sub unsub like dislike
+// user action api like sub unsub 
 router.put("/sub/:id", protect, subscribe);
 router.put("/unsub/:id", protect, unsubscribe);
-router.put("/like/:videoId", protect, like);
-router.put("/dislike/:videoId", protect, dislike);
 
 // email sending and verifing api
 router.post("/sendemail", sendEmail);
@@ -59,5 +57,9 @@ router.delete("/watch", protect, deleteWatchLater);
 
 router.get("/history", protect, fetchUserHistory);
 router.delete("/history", protect, deleteUserHistory);
+
+// analsis
+
+router.get("/analysis/:id",protect,analysis)
 
 module.exports = router;

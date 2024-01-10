@@ -13,6 +13,8 @@ const {
   search,
   fetchVideos,
   addTime,
+  like,
+  dislike,
 } = require("../controllers/videoControllers");
 
 const router = express.Router();
@@ -35,6 +37,11 @@ router.get("/tags", protect, tag);
 router.get("/search", protect, search);
 
 // updating time
-router.post("/time/:id",protect,addTime)
+router.post("/time/:id", protect, addTime);
+
+// like and dislike
+
+router.put("/like/:id", protect, like);
+router.put("/dislike/:id", protect, dislike);
 
 module.exports = router;

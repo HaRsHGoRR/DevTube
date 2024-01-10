@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 const DevTubeVideoDataSchema = new mongoose.Schema(
   {
     userId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DevTubeUser", // Reference to DevTubeVideo model
+
       required: true,
     },
     videoId: {

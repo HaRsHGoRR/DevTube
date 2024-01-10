@@ -260,6 +260,92 @@ const addTime = asyncHandler(async (req, res) => {
   }
 });
 
+const like = asyncHandler(async (req, res) => {
+  try {
+    const videoId = req.params.id;
+    const userId = req.user._id;
+
+    const findVideo = await DevTubeVideo.findById(videoId);
+
+    if (findVideo) {
+      const likes = findVideo.likes;
+      const dislikes = findVideo.disLikes;
+
+      // Check if userId is present in likes array
+      const userIndexInLikes = likes.indexOf(userId);
+
+      if (userIndexInLikes === -1) {
+        // If userId is not present in likes, add it to likes array
+        findVideo.likes.push(userId);
+      } else {
+        // If userId is present in likes, remove it from likes array
+        findVideo.likes.splice(userIndexInLikes, 1);
+      }
+
+      // Check if userId is present in dislikes array
+      const userIndexInDislikes = dislikes.indexOf(userId);
+
+      if (userIndexInDislikes !== -1) {
+        // If userId is present in dislikes, remove it from dislikes array
+        findVideo.disLikes.splice(userIndexInDislikes, 1);
+      }
+
+      // Save the updated video
+      await findVideo.save();
+
+      res.status(200).json(findVideo);
+    } else {
+      throw new Error("Can not find Video.");
+    }
+  } catch (error) {
+    res.status(500);
+    throw error;
+  }
+});
+
+const dislike = asyncHandler(async (req, res) => {
+  try {
+    const videoId = req.params.id;
+    const userId = req.user._id;
+
+    const findVideo = await DevTubeVideo.findById(videoId);
+
+    if (findVideo) {
+      const likes = findVideo.likes;
+      const dislikes = findVideo.disLikes;
+
+      // Check if userId is present in dislikes array
+      const userIndexInDislikes = dislikes.indexOf(userId);
+
+      if (userIndexInDislikes === -1) {
+        // If userId is not present in dislikes, add it to dislikes array
+        findVideo.disLikes.push(userId);
+      } else {
+        // If userId is present in dislikes, remove it from dislikes array
+        findVideo.disLikes.splice(userIndexInDislikes, 1);
+      }
+
+      // Check if userId is present in likes array
+      const userIndexInLikes = likes.indexOf(userId);
+
+      if (userIndexInLikes !== -1) {
+        // If userId is present in likes, remove it from likes array
+        findVideo.likes.splice(userIndexInLikes, 1);
+      }
+
+      // Save the updated video
+      await findVideo.save();
+
+      res.status(200).json(findVideo);
+    } else {
+      throw new Error("Can not find Video.");
+    }
+  } catch (error) {
+    res.status(500);
+    throw error;
+  }
+});
+
 module.exports = {
   search,
   tag,
@@ -273,4 +359,6 @@ module.exports = {
   addView,
   fetchVideos,
   addTime,
+  like,
+  dislike,
 };

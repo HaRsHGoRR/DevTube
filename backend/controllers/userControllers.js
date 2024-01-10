@@ -7,26 +7,23 @@ const bcrypt = require("bcryptjs");
 const { mailer } = require("../config/mailers");
 const DevTubeVideo = require("../models/videoModal");
 const jwt = require("jsonwebtoken");
-
+const DevTubeVideoData = require("../models/devTubeVideoData");
 
 // user crud apis
-const authenticateUser=asyncHandler(async(req,res)=>{
-    const {token}=req.body
+const authenticateUser = asyncHandler(async (req, res) => {
+  const { token } = req.body;
   try {
-      const decoded = jwt.verify(token, process.env.JWT_KEY);
-      console.log(decoded);
+    const decoded = jwt.verify(token, process.env.JWT_KEY);
+    console.log(decoded);
     const data = await DevTubeUser.findById(decoded.id).select("-password");
 
-    if(data){
-    res.status(200).json({ status: "SUCCESS" });
-
+    if (data) {
+      res.status(200).json({ status: "SUCCESS" });
     }
-
-
   } catch (error) {
-     res.status(400).json({ status: "FAIL" });
+    res.status(400).json({ status: "FAIL" });
   }
-})
+});
 
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, img } = req.body;
@@ -264,7 +261,7 @@ const resetpassword = asyncHandler(async (req, res) => {
   }
 });
 
-// like dislike sub and unsub
+// sub and unsub
 
 const subscribe = asyncHandler(async (req, res) => {
   try {
@@ -320,15 +317,6 @@ const unsubscribe = asyncHandler(async (req, res) => {
   }
 });
 
-const like = asyncHandler(async (req, res) => {
-  try {
-  } catch (error) {}
-});
-
-const dislike = asyncHandler(async (req, res) => {
-  try {
-  } catch (error) {}
-});
 
 // watch later apis
 
@@ -348,10 +336,9 @@ const addWatchLater = asyncHandler(async (req, res) => {
       path: "watchLater",
     });
 
-     const isVideoInWatchLater = findVideo.watchLater.some((watchLaterVideo) =>
-       watchLaterVideo._id.equals(videoId)
-     );
-
+    const isVideoInWatchLater = findVideo.watchLater.some((watchLaterVideo) =>
+      watchLaterVideo._id.equals(videoId)
+    );
 
     if (isVideoInWatchLater) {
       res.status(200).json(findVideo.watchLater);
@@ -479,7 +466,55 @@ const deleteUserHistory = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = {
+
+// analysis
+
+const analysis=asyncHandler(async(req,res)=>{
+  try {
+    const videoId=req.params.id;
+    const userId=req.user._id;
+
+    const findVideo=await DevTubeVideo.findById(videoId);
+    if(!findVideo){
+      throw new Error("Video not found.")
+    }
+    if(findVideo.userId != userId){
+      throw new Error("Not authorized to analyze.")
+    }
+
+    const totalTime=findVideo.length;
+
+    const findUser = await DevTubeVideoData.find({ videoId }).populate(
+      "userId"
+    );
+
+    const percentageDetails = [];
+
+    findUser.forEach((videoData) => {
+      const percentageWatched = (videoData.timeCompleted / totalTime) * 100;
+
+      // Include user details (username) and their percentage in the response
+      percentageDetails.push({
+        
+        username: videoData.userId.name,
+        percentageWatched: percentageWatched.toFixed(2), // Adjust decimal places as needed
+      });
+    });
+
+
+    res.status(200).json(percentageDetails)
+
+  
+
+    
+
+  } catch (error) {
+    res.status(400)
+    throw error
+  }
+})
+
+module.exports = {analysis,
   deleteUserHistory,
   fetchUserHistory,
   registerUser,
@@ -493,8 +528,7 @@ module.exports = {
   findUser,
   subscribe,
   unsubscribe,
-  like,
-  dislike,
+
   deleteWatchLater,
   fetchWatchLater,
   updateWatchLater,
