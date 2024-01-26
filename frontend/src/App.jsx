@@ -1,0 +1,72 @@
+import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from "./Pages/FromNavbar/Home";
+import About from "./Pages/FromNavbar/About";
+import Contact from "./Pages/FromNavbar/Contact";
+import Navbar from "./Components/Navbar";
+import { useEffect, useState } from "react";
+import { initFlowbite } from "flowbite";
+import TrendingPage from "./Pages/FromSidebar/TrendingPage";
+import SubscriptionPage from "./Pages/FromSidebar/SubscriptionPage";
+import HistoryPage from "./Pages/FromSidebar/HistoryPage";
+import RandomPage from "./Pages/FromSidebar/RandomPage";
+import WatchLaterPage from "./Pages/FromSidebar/WatchLaterPage";
+import PlaylistPage from "./Pages/FromSidebar/PlaylistPage";
+import AnalyticsPage from "./Pages/FromSidebar/AnalyticsPage";
+import YourVideos from "./Pages/FromSidebar/YourVideos";
+import { fetchUser } from "../State/User/userAction";
+import { useDispatch, useSelector } from "react-redux";
+
+function App() {
+  const [showSide, setShowSide] = useState(false);
+  const dispatch = useDispatch();
+  const { data } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    initFlowbite();
+  }, []);
+
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const fetchData = async () => {
+
+      await dispatch(fetchUser(userInfo));
+
+    };
+
+    if (!userInfo) {
+    } else {
+
+      fetchData();
+    }
+  }, [fetchUser]);
+
+  const showSidebar = () => {
+    setShowSide(!showSide);
+    document.body.classList.toggle("no-scroll", showSide);
+  };
+
+  return (
+    <BrowserRouter>
+      <Navbar />
+
+      <div className=" px-4 w-full bg-gray-900 h-[100vh] text-white pt-1  ">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/trending" element={<TrendingPage />} />
+          <Route path="/subscriptions" element={<SubscriptionPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/random" element={<RandomPage />} />
+          <Route path="/watchlater" element={<WatchLaterPage />} />
+          <Route path="/playlist" element={<PlaylistPage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/yourvideos" element={<YourVideos />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
+}
+
+export default App;

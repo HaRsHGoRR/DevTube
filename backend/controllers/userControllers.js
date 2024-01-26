@@ -14,14 +14,67 @@ const authenticateUser = asyncHandler(async (req, res) => {
   const { token } = req.body;
   try {
     const decoded = jwt.verify(token, process.env.JWT_KEY);
-    console.log(decoded);
-    const data = await DevTubeUser.findById(decoded.id).select("-password");
-
+    let data = await DevTubeUser.findById(decoded.id).select("-password").lean();
     if (data) {
-      res.status(200).json({ status: "SUCCESS" });
+     
+      res.status(200).json({...data,token:generateToken(decoded.id)});
+    } else {
+      throw new Error("user not found");
     }
   } catch (error) {
     res.status(400).json({ status: "FAIL" });
+  }
+});
+
+const googleAuth = asyncHandler(async (req, res) => {
+  const { name, email, img } = req.body;
+
+  if (!name || !email) {
+    res.status(400);
+    throw new Error("Please enter all the fields.");
+  }
+
+  const userExistsEMail = await DevTubeUser.findOne({ email });
+
+  if (userExistsEMail) {
+    let user = userExistsEMail;
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      img: user.img,
+      subscribers: user.subscribers,
+      subscribedUsers: user.subscribedUsers,
+      history: user.history,
+      watchLater: user.watchLater,
+      token: generateToken(user._id),
+      google: user.google,
+    });
+  } else {
+    const user = await DevTubeUser.create({
+      name,
+      email,
+      google: true,
+      img,
+    });
+
+    if (user) {
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        img: user.img,
+        subscribers: user.subscribers,
+        subscribedUsers: user.subscribedUsers,
+        history: user.history,
+        watchLater: user.watchLater,
+        token: generateToken(user._id),
+        google: user.google,
+      });
+    } else {
+      res.status(400);
+      throw new Error("Sorry, failed to create user.");
+    }
   }
 });
 
@@ -55,9 +108,10 @@ const registerUser = asyncHandler(async (req, res) => {
       img: user.img,
       subscribers: user.subscribers,
       subscribedUsers: user.subscribedUsers,
-      history: user.history,
-      watchLater: user.watchLater,
+      // history: user.history,
+      // watchLater: user.watchLater,
       token: generateToken(user._id),
+      google: user.google,
     });
   } else {
     res.status(400);
@@ -85,9 +139,10 @@ const loginUser = asyncHandler(async (req, res) => {
       img: user.img,
       subscribers: user.subscribers,
       subscribedUsers: user.subscribedUsers,
-      history: user.history,
-      watchLater: user.watchLater,
+      // history: user.history,
+      // watchLater: user.watchLater,
       token: generateToken(user._id),
+      google: user.google,
     });
   } else {
     res.status(400);
@@ -108,8 +163,19 @@ const updateUser = asyncHandler(async (req, res) => {
         new: true,
       }
     );
-
-    res.status(200).json(updatedUser);
+    let user = updatedUser;
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      img: user.img,
+      subscribers: user.subscribers,
+      subscribedUsers: user.subscribedUsers,
+      // history: user.history,
+      // watchLater: user.watchLater,
+      token: generateToken(user._id),
+      google: user.google,
+    });
   } catch (error) {
     res.status(400);
     throw new Error("Can not Update User.");
@@ -317,7 +383,6 @@ const unsubscribe = asyncHandler(async (req, res) => {
   }
 });
 
-
 // watch later apis
 
 const addWatchLater = asyncHandler(async (req, res) => {
@@ -363,7 +428,6 @@ const addWatchLater = asyncHandler(async (req, res) => {
       }
     }
   } catch (error) {
-    console.log(error);
     res.status(500);
     throw new Error("Can not add video to watch later.");
   }
@@ -466,23 +530,22 @@ const deleteUserHistory = asyncHandler(async (req, res) => {
   }
 });
 
-
 // analysis
 
-const analysis=asyncHandler(async(req,res)=>{
+const analysis = asyncHandler(async (req, res) => {
   try {
-    const videoId=req.params.id;
-    const userId=req.user._id;
+    const videoId = req.params.id;
+    const userId = req.user._id;
 
-    const findVideo=await DevTubeVideo.findById(videoId);
-    if(!findVideo){
-      throw new Error("Video not found.")
+    const findVideo = await DevTubeVideo.findById(videoId);
+    if (!findVideo) {
+      throw new Error("Video not found.");
     }
-    if(findVideo.userId != userId){
-      throw new Error("Not authorized to analyze.")
+    if (findVideo.userId != userId) {
+      throw new Error("Not authorized to analyze.");
     }
 
-    const totalTime=findVideo.length;
+    const totalTime = findVideo.length;
 
     const findUser = await DevTubeVideoData.find({ videoId }).populate(
       "userId"
@@ -495,26 +558,21 @@ const analysis=asyncHandler(async(req,res)=>{
 
       // Include user details (username) and their percentage in the response
       percentageDetails.push({
-        
         username: videoData.userId.name,
         percentageWatched: percentageWatched.toFixed(2), // Adjust decimal places as needed
       });
     });
 
-
-    res.status(200).json(percentageDetails)
-
-  
-
-    
-
+    res.status(200).json(percentageDetails);
   } catch (error) {
-    res.status(400)
-    throw error
+    res.status(400);
+    throw error;
   }
-})
+});
 
-module.exports = {analysis,
+module.exports = {
+  googleAuth,
+  analysis,
   deleteUserHistory,
   fetchUserHistory,
   registerUser,

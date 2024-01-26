@@ -11,7 +11,7 @@ const {
   findUser,
   subscribe,
   unsubscribe,
-  
+
   addWatchLater,
   fetchWatchLater,
   updateWatchLater,
@@ -20,6 +20,7 @@ const {
   deleteUserHistory,
   authenticateUser,
   analysis,
+  googleAuth,
 } = require("../controllers/userControllers");
 const { protect } = require("../middlewares/authorization");
 
@@ -27,15 +28,16 @@ const router = express.Router();
 // authenticate user
 router.post("/authenticate", authenticateUser);
 
-
 // /user api
+
+router.post("/google", googleAuth);
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.put("/update", protect, updateUser);
 router.delete("/delete", protect, deleteUser);
 router.get("/find/:id", protect, findUser);
 
-// user action api like sub unsub 
+// user action api like sub unsub
 router.put("/sub/:id", protect, subscribe);
 router.put("/unsub/:id", protect, unsubscribe);
 
@@ -60,6 +62,6 @@ router.delete("/history", protect, deleteUserHistory);
 
 // analsis
 
-router.get("/analysis/:id",protect,analysis)
+router.get("/analysis/:id", protect, analysis);
 
 module.exports = router;
