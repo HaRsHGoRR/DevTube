@@ -11,9 +11,9 @@ const router = express.Router();
 
 // crud on comments
 
-router.post("/", protect, addComment);
-router.get("/", protect, fetchComments);
-router.delete("/", protect, deleteComment);
+router.post("/add", protect, addComment);
+router.post("/", protect, fetchComments);
+router.post("/delete", protect, deleteComment);
 router.put("/:id", protect, updateComment);
 
 

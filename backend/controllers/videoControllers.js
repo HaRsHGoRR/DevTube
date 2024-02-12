@@ -4,6 +4,7 @@ const VideoModal = require("../models/videoModal");
 const asyncHandler = require("express-async-handler");
 const { fetchUserHistory } = require("./userControllers");
 const DevTubeVideo = require("../models/videoModal");
+const DevTubeViews = require("../models/viewModal");
 
 const fetchVideos = asyncHandler(async (req, res) => {
   const key = req.user._id;
@@ -14,7 +15,7 @@ const fetchVideos = asyncHandler(async (req, res) => {
     res.status(200).json(allVideos);
   } else {
     res.status(400);
-    throw new Error("Unable to load your videos");
+    throw new Error("Unable to load videos");
   }
 });
 
@@ -101,7 +102,11 @@ const deleteVideo = asyncHandler(async (req, res) => {
 const findVideo = asyncHandler(async (req, res) => {
   try {
     const video = await VideoModal.findById(req.params.id);
-    res.status(200).json(video);
+    const user = await DevTubeUser.findById(video.userId).select(
+      "name img subscribers"
+    );
+   
+    res.status(200).json({...video._doc,user});
   } catch (error) {
     res.status(400);
     throw new Error("Can not find video");
@@ -120,8 +125,28 @@ const addView = asyncHandler(async (req, res) => {
       throw new Error("Video not found.");
     }
 
-    video.views += 1;
-    await video.save();
+    let findUser=await DevTubeViews.findOne({videoId})
+
+    if (!findUser) {
+      // If findUser doesn't exist, create a new instance
+      findUser = new DevTubeViews({
+        videoId: videoId,
+        user: [userId],
+      });
+      await findUser.save()
+      video.views += 1;
+      await video.save();
+    }
+    if(!findUser.user.includes(userId)){
+      findUser.user.push(userId)
+      await findUser.save();
+      video.views += 1;
+      await video.save();
+    }
+
+    
+    // video.views += 1;
+    // await video.save();
 
     let videoData = await DevTubeVideoData.findOne({ userId, videoId });
     let user = await DevTubeUser.findOne({ _id: userId }).populate({
@@ -158,7 +183,6 @@ const addView = asyncHandler(async (req, res) => {
     });
     // Extract the sorted history from the user
     const sortedHistory = updatedUser.history.map((item) => item.toObject());
-
     res.status(200).json(sortedHistory);
   } catch (error) {
     res.status(400);
@@ -170,17 +194,46 @@ const addView = asyncHandler(async (req, res) => {
 const trend = asyncHandler(async (req, res) => {
   try {
     const videos = await DevTubeVideo.find().sort({ views: -1 });
-    res.status(200).json(videos);
+
+    const videoPromises = videos.map(async (video) => {
+      const user = await DevTubeUser.findById(video.userId).select("name img");
+      return {
+        ...video._doc,
+        userId: {
+          userId: video.userId,
+          userName: user.name,
+          userImg: user.img,
+        },
+      };
+    });
+
+    const videosWithUser = await Promise.all(videoPromises);
+
+    res.status(200).json(videosWithUser);
   } catch (error) {
-    res.status(400);
-    throw new Error("Can not load video");
+    res.status(400).json({ error: "Can not load video" });
   }
 });
 
 const random = asyncHandler(async (req, res) => {
   try {
-    const videos = await DevTubeVideo.aggregate([{ $sample: { size: 40 } }]);
-    res.status(200).json(videos);
+    let videos = await DevTubeVideo.aggregate([{ $sample: { size: 40 } }]);
+
+    const videoPromises = videos.map(async (video) => {
+      const user = await DevTubeUser.findById(video.userId).select("name img");
+      return {
+        ...video,
+        userId: {
+          userId: video.userId,
+          userName: user.name,
+          userImg: user.img,
+        },
+      };
+    });
+
+    const videosWithUser = await Promise.all(videoPromises);
+
+    res.status(200).json(videosWithUser);
   } catch (error) {
     res.status(400);
     throw new Error("Can not load video");
@@ -191,16 +244,40 @@ const sub = asyncHandler(async (req, res) => {
   try {
     const user = await DevTubeUser.findById(req.user._id);
     const subscribedChannel = user.subscribedUsers;
-    const list = await Promise.all(
-      subscribedChannel.map((channelId) => {
-        return DevTubeVideo.find({ userId: channelId });
+    const videosList = await Promise.all(
+      subscribedChannel.map(async (channelId) => {
+        const videos = await DevTubeVideo.find({ userId: channelId });
+
+        // Extract only necessary fields from each video
+        const modifiedVideos = videos.map(async (video) => {
+          const videoUser = await DevTubeUser.findById(video.userId).select(
+            "name img"
+          );
+
+          // Extract only necessary fields from user
+          const userInfo = {
+            userId: video.userId,
+            userName: videoUser.name,
+            userImg: videoUser.img,
+          };
+
+          return {
+            ...video._doc, // Include all fields from the video document
+            userId: userInfo,
+          };
+        });
+
+        return Promise.all(modifiedVideos);
       })
     );
 
-    res.status(200).json(list.flat().sort((a, b) => b.createdAt - a.createdAt));
+    const flattenedList = videosList
+      .flat()
+      .sort((a, b) => b.updatedAt - a.updatedAt);
+
+    res.status(200).json(flattenedList);
   } catch (error) {
-    res.status(400);
-    throw new Error("Can not load video");
+    res.status(400).json({ error: "Can not load video" });
   }
 });
 
@@ -265,7 +342,7 @@ const like = asyncHandler(async (req, res) => {
     const videoId = req.params.id;
     const userId = req.user._id;
 
-    const findVideo = await DevTubeVideo.findById(videoId);
+    const findVideo = await DevTubeVideo.findById(videoId).select("likes disLikes");
 
     if (findVideo) {
       const likes = findVideo.likes;
@@ -308,7 +385,9 @@ const dislike = asyncHandler(async (req, res) => {
     const videoId = req.params.id;
     const userId = req.user._id;
 
-    const findVideo = await DevTubeVideo.findById(videoId);
+    const findVideo = await DevTubeVideo.findById(videoId).select(
+      "likes disLikes"
+    );
 
     if (findVideo) {
       const likes = findVideo.likes;

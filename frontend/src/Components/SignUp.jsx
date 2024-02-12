@@ -84,7 +84,6 @@ const Signup = ({ onClose }) => {
           setLoading(false);
         })
         .catch((err) => {
-          console.log(err);
           setLoading(false);
         });
     } else {
@@ -146,7 +145,6 @@ const Signup = ({ onClose }) => {
         isClosable: true,
         position: "bottom-left",
       });
-      console.log(data);
       otpOpen();
     } catch (error) {
       toast({
@@ -197,7 +195,6 @@ const Signup = ({ onClose }) => {
         position: "bottom-left",
       });
     } catch (error) {
-      console.log(error);
       toast({
         title: "Failed to create account.",
         // description: error.response.data.message,

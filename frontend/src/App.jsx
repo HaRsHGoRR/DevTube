@@ -16,6 +16,9 @@ import AnalyticsPage from "./Pages/FromSidebar/AnalyticsPage";
 import YourVideos from "./Pages/FromSidebar/YourVideos";
 import { fetchUser } from "../State/User/userAction";
 import { useDispatch, useSelector } from "react-redux";
+import User from "./Pages/User";
+import Error from "./Pages/Error";
+import Video from "./Components/Video";
 
 function App() {
   const [showSide, setShowSide] = useState(false);
@@ -29,14 +32,11 @@ function App() {
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const fetchData = async () => {
-
       await dispatch(fetchUser(userInfo));
-
     };
 
     if (!userInfo) {
     } else {
-
       fetchData();
     }
   }, [fetchUser]);
@@ -50,7 +50,7 @@ function App() {
     <BrowserRouter>
       <Navbar />
 
-      <div className=" px-4 w-full bg-gray-900 h-[100vh] text-white pt-1  ">
+      <div className="md:px-4 px-0 w-full bg-gray-900  text-white pt-1 min-h-screen  ">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -63,6 +63,10 @@ function App() {
           <Route path="/playlist" element={<PlaylistPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/yourvideos" element={<YourVideos />} />
+          <Route path="/user" element={<User />} />
+          <Route path="/video" element={<Video />} />
+
+          <Route path="*" element={<Error />} />
         </Routes>
       </div>
     </BrowserRouter>

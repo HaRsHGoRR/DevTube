@@ -14,10 +14,11 @@ const authenticateUser = asyncHandler(async (req, res) => {
   const { token } = req.body;
   try {
     const decoded = jwt.verify(token, process.env.JWT_KEY);
-    let data = await DevTubeUser.findById(decoded.id).select("-password").lean();
+    let data = await DevTubeUser.findById(decoded.id)
+      .select("-password")
+      .lean();
     if (data) {
-     
-      res.status(200).json({...data,token:generateToken(decoded.id)});
+      res.status(200).json({ ...data, token: generateToken(decoded.id) });
     } else {
       throw new Error("user not found");
     }
@@ -38,6 +39,12 @@ const googleAuth = asyncHandler(async (req, res) => {
 
   if (userExistsEMail) {
     let user = userExistsEMail;
+
+    if (userExistsEMail.google == false) {
+      userExistsEMail.google = true;
+      userExistsEMail.save();
+    }
+
     res.status(201).json({
       _id: user._id,
       name: user.name,
@@ -130,6 +137,10 @@ const loginUser = asyncHandler(async (req, res) => {
   if (email) {
     user = await DevTubeUser.findOne({ email });
   }
+  if (user && user.google) {
+    res.status(400);
+    throw new Error("Please login via Google.");
+  }
 
   if (user && (await user.mathchPassword(password))) {
     res.status(201).json({
@@ -197,9 +208,16 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 const findUser = asyncHandler(async (req, res) => {
   try {
-    const user = await DevTubeUser.findById(req.params.id).select("-password");
+    const user = await DevTubeUser.findById(req.params.id).select(
+      "name img subscribers"
+    );
 
-    res.status(200).json(user);
+    // const videos = await DevTubeVideo.find({ userId: req.params.id });
+    const videos = await DevTubeVideo.find({ userId: req.params.id }).sort({
+      updatedAt: -1,
+    });
+
+    res.status(200).json({ user: user._doc, videos });
   } catch (error) {
     res.status(400);
     throw new Error("Can not Find User.");
@@ -331,18 +349,32 @@ const resetpassword = asyncHandler(async (req, res) => {
 
 const subscribe = asyncHandler(async (req, res) => {
   try {
+    // Check if the user is already subscribed
+    const isAlreadySubscribed = await DevTubeUser.exists({
+      _id: req.user._id,
+      subscribedUsers: req.params.id,
+    });
+
+    if (isAlreadySubscribed) {
+      throw new Error("Already Subscribed");
+
+      return;
+    }
+
+    // Update the subscriber's subscribedUsers array
     const updateSubcriber = await DevTubeUser.findByIdAndUpdate(
       req.user._id,
       {
-        $push: { subscribedUsers: req.params.id },
+        $addToSet: { subscribedUsers: req.params.id },
       },
       { new: true }
     );
 
+    // Update the creator's subscribers array
     const updateCreator = await DevTubeUser.findByIdAndUpdate(
       req.params.id,
       {
-        $push: { subscribers: req.user._id },
+        $addToSet: { subscribers: req.user._id },
       },
       {
         new: true,
@@ -351,14 +383,25 @@ const subscribe = asyncHandler(async (req, res) => {
 
     res.status(200).json({ status: "Subscription Successful" });
   } catch (error) {
-    res.status(400);
-    throw new Error("Can not Subscribe to User.");
+    throw error
   }
 });
 
 const unsubscribe = asyncHandler(async (req, res) => {
   try {
-    const updateSubcriber = await DevTubeUser.findByIdAndUpdate(
+    // Check if the user is subscribed before attempting to unsubscribe
+    const isSubscribed = await DevTubeUser.exists({
+      _id: req.user._id,
+      subscribedUsers: req.params.id,
+    });
+
+    if (!isSubscribed) {
+      throw new Error("Not Subscribed");
+      return;
+    }
+
+    // Update the subscriber's subscribedUsers array
+    const updateSubscriber = await DevTubeUser.findByIdAndUpdate(
       req.user._id,
       {
         $pull: { subscribedUsers: req.params.id },
@@ -366,6 +409,7 @@ const unsubscribe = asyncHandler(async (req, res) => {
       { new: true }
     );
 
+    // Update the creator's subscribers array
     const updateCreator = await DevTubeUser.findByIdAndUpdate(
       req.params.id,
       {
@@ -378,10 +422,66 @@ const unsubscribe = asyncHandler(async (req, res) => {
 
     res.status(200).json({ status: "Unsubscription Successful" });
   } catch (error) {
-    res.status(400);
-    throw new Error("Can not Unsubscribe to User.");
+    res.status(400).json({ error: "Can not Unsubscribe from User." });
   }
 });
+
+const manageSubscription = asyncHandler(async (req, res) => {
+  try {
+    const isSubscribed = await DevTubeUser.exists({
+      _id: req.user._id,
+      subscribedUsers: req.params.id,
+    });
+
+    if (isSubscribed) {
+      // User is already subscribed, perform unsubscription
+      await DevTubeUser.findByIdAndUpdate(
+        req.user._id,
+        { $pull: { subscribedUsers: req.params.id } },
+        { new: true }
+      );
+
+      const sub=await DevTubeUser.findByIdAndUpdate(
+        req.params.id,
+        { $pull: { subscribers: req.user._id } },
+        { new: true }
+      );
+
+      res
+        .status(200)
+        .json({
+          status: "Unsubscription Successful",
+          subscribers: sub.subscribers.length,
+        });
+    } else {
+      // User is not subscribed, perform subscription
+      await DevTubeUser.findByIdAndUpdate(
+        req.user._id,
+        { $addToSet: { subscribedUsers: req.params.id } },
+        { new: true }
+      );
+
+     const sub = await DevTubeUser.findByIdAndUpdate(
+       req.params.id,
+       { $addToSet: { subscribers: req.user._id } },
+       { new: true }
+     );
+
+      res
+        .status(200)
+        .json({
+          status: "Subscription Successful",
+          subscribers: sub.subscribers.length,
+        });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message || "Unable to manage subscription." });
+  }
+});
+
+// Usage
+// To manage subscription (subscribe if not subscribed, unsubscribe if subscribed): manageSubscription(req, res, { params: { id: 'someUserId' } });
+
 
 // watch later apis
 
@@ -571,6 +671,7 @@ const analysis = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  manageSubscription,
   googleAuth,
   analysis,
   deleteUserHistory,

@@ -39,6 +39,8 @@ export default function RegLog({ isOpen, onOpen, onClose }) {
     await signInWithPopup(auth, provider)
       .then(async (result) => {
         try {
+          // "api/user/google"
+
           const { data } = await axios.post("api/user/google", {
             email: result.user.email,
             name: result.user.displayName,
@@ -59,7 +61,7 @@ export default function RegLog({ isOpen, onOpen, onClose }) {
         } catch (error) {
           toast({
             title: "Failed to connect with Google.",
-            //  description: error,
+            // description: error.response.data.message,
             status: "error",
             duration: 2000,
             isClosable: true,
@@ -73,7 +75,7 @@ export default function RegLog({ isOpen, onOpen, onClose }) {
         // console.log(error);
         toast({
           title: "Failed to continue with Google.",
-          //  description: error,
+          // description: error.response.data.message,
           status: "error",
           duration: 2000,
           isClosable: true,
@@ -83,7 +85,6 @@ export default function RegLog({ isOpen, onOpen, onClose }) {
         // onClose();
       });
     setGoogleLoad(false);
-
   };
 
   const OverlayTwo = () => (
@@ -99,8 +100,6 @@ export default function RegLog({ isOpen, onOpen, onClose }) {
 
   return (
     <>
-     
-
       <Modal isOpen={isOpen} onClose={onClose} size={{ base: "sm", md: "md" }}>
         {overlay}
         <ModalContent bg="gray.900" color="white">

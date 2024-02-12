@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const CommmentSchema = new mongoose.Schema(
   {
     userId: {
-      type: String,
-
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DevTubeUser",
       required: true,
     },
 

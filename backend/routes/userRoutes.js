@@ -11,7 +11,7 @@ const {
   findUser,
   subscribe,
   unsubscribe,
-
+manageSubscription,
   addWatchLater,
   fetchWatchLater,
   updateWatchLater,
@@ -38,8 +38,10 @@ router.delete("/delete", protect, deleteUser);
 router.get("/find/:id", protect, findUser);
 
 // user action api like sub unsub
-router.put("/sub/:id", protect, subscribe);
-router.put("/unsub/:id", protect, unsubscribe);
+// router.put("/sub/:id", protect, subscribe);
+// router.put("/unsub/:id", protect, unsubscribe);
+router.put("/sub/:id", protect, manageSubscription);
+
 
 // email sending and verifing api
 router.post("/sendemail", sendEmail);

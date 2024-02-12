@@ -1,7 +1,7 @@
 import { AlignJustify, Search, Slash } from "lucide-react";
 import Sidebar from "./Sidebar";
 import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import RegLog from "./RegLog";
 import { Button, Center, useDisclosure } from "@chakra-ui/react";
 import { IoMdClose } from "react-icons/io";
@@ -14,10 +14,12 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [drop1, setDrop1] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     localStorage.removeItem("userInfo");
     dispatch(logoutUserRequest());
+    // window.location.replace();
   };
 
   return (
@@ -243,9 +245,10 @@ const Navbar = () => {
                     <Button
                       colorScheme="red"
                       variant="outline"
-                      onClick={()=>{
-                         setDrop1(!drop1);
-                        handleLogout()}}
+                      onClick={() => {
+                        setDrop1(!drop1);
+                        handleLogout();
+                      }}
                     >
                       <span className="mr-2">Log out </span>
                       <FiLogOut />

@@ -41,8 +41,7 @@ export const fetchUser = (user) => {
         const { data } = await axios.post("/api/user/authenticate", { token });
 
         if (data) {
-          console.log(data);
-
+          // here have to set user history and watch later
           dispatch(fetchUserSuccess(data));
         }
       } catch (error) {
@@ -70,7 +69,6 @@ export const updateUser = ({ img, name, token }) => {
         config
       );
       if (data) {
-        console.log(data);
         dispatch(fetchUserSuccess(data));
       }
     } catch (error) {

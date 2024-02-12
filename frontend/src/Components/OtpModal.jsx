@@ -16,7 +16,7 @@ import { PinInput, PinInputField } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function OtpModal({ email, isOpen, onOpen, onClose, otpFun }) {
+export default function OtpModal({ email, isOpen, onOpen, onClose, otpFun ,}) {
   const toast = useToast();
   const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
@@ -73,6 +73,9 @@ export default function OtpModal({ email, isOpen, onOpen, onClose, otpFun }) {
     }
   };
 
+ 
+  
+
   const OverlayTwo = () => (
     <ModalOverlay
       bg="none"
@@ -108,7 +111,7 @@ export default function OtpModal({ email, isOpen, onOpen, onClose, otpFun }) {
                   <Text>Enter OTP</Text>
                 </Center>
                 <Center>
-                  <HStack w="1000%" mt={2}>
+                  <HStack  mt={2}>
                     <PinInput placeholder="" onChange={handlePinChange}>
                       <PinInputField />
                       <PinInputField />
@@ -117,6 +120,7 @@ export default function OtpModal({ email, isOpen, onOpen, onClose, otpFun }) {
                       <PinInputField />
                       <PinInputField />
                     </PinInput>
+
                   </HStack>
                 </Center>
 
@@ -125,7 +129,9 @@ export default function OtpModal({ email, isOpen, onOpen, onClose, otpFun }) {
                     colorScheme="blue"
                     isLoading={loading}
                     style={{ marginTop: 15 }}
-                    onClick={verifyOtp}
+                    onClick={() => {
+                      verifyOtp();
+                    }}
                   >
                     Verify
                   </Button>

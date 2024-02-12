@@ -291,7 +291,7 @@ const UserSetting = ({ isOpen, onOpen, onClose }) => {
       const config = {
         headers: {
           "Content-type": "application/json",
-          Authorization: `Bearer ${user.token}`,
+          
         },
       };
 
@@ -414,22 +414,52 @@ const UserSetting = ({ isOpen, onOpen, onClose }) => {
                     >
                       Update
                     </Button>
-                  </Box>
+                   </Box>
 
-                  <Box
-                    mt={2}
-                    w="100%"
-                    p={4}
-                    borderRadius="lg"
-                    borderWidth="1px"
-                    display="flex-col"
-                    align="center"
-                    justify="center"
-                    borderColor="gray.600"
-                  >
-                    <FormLabel mt={0}>Update Password</FormLabel>
+                  {!user.google && (
+                    <Box
+                      mt={2}
+                      w="100%"
+                      p={4}
+                      borderRadius="lg"
+                      borderWidth="1px"
+                      display="flex-col"
+                      align="center"
+                      justify="center"
+                      borderColor="gray.600"
+                    >
+                      <FormLabel mt={0}>Update Password</FormLabel>
 
-                    {showOld && (
+                      {showOld && (
+                        <FormControl
+                          mt={3}
+                          variant="floating"
+                          id="password"
+                          isRequired
+                        >
+                          <InputGroup>
+                            <Input
+                              placeholder=" "
+                              autoComplete="off"
+                              type={show ? "text" : "password"}
+                              onChange={(e) => {
+                                setOldPassword(e.target.value);
+                              }}
+                            ></Input>
+                            <FormLabel>Old Password:</FormLabel>
+
+                            <InputRightElement width="3.5rem">
+                              <Button
+                                h="1.50rem"
+                                size="sm"
+                                onClick={handleClick}
+                              >
+                                {show ? <FaRegEyeSlash /> : <FaRegEye />}
+                              </Button>
+                            </InputRightElement>
+                          </InputGroup>
+                        </FormControl>
+                      )}
                       <FormControl
                         mt={3}
                         variant="floating"
@@ -442,10 +472,10 @@ const UserSetting = ({ isOpen, onOpen, onClose }) => {
                             autoComplete="off"
                             type={show ? "text" : "password"}
                             onChange={(e) => {
-                              setOldPassword(e.target.value);
+                              setPassword(e.target.value);
                             }}
                           ></Input>
-                          <FormLabel>Old Password:</FormLabel>
+                          <FormLabel>New Password:</FormLabel>
 
                           <InputRightElement width="3.5rem">
                             <Button h="1.50rem" size="sm" onClick={handleClick}>
@@ -454,79 +484,55 @@ const UserSetting = ({ isOpen, onOpen, onClose }) => {
                           </InputRightElement>
                         </InputGroup>
                       </FormControl>
-                    )}
-                    <FormControl
-                      mt={3}
-                      variant="floating"
-                      id="password"
-                      isRequired
-                    >
-                      <InputGroup>
-                        <Input
-                          placeholder=" "
-                          autoComplete="off"
-                          type={show ? "text" : "password"}
-                          onChange={(e) => {
-                            setPassword(e.target.value);
+                      <FormControl
+                        mt={3}
+                        variant="floating"
+                        id="confirmpassword"
+                        isRequired
+                      >
+                        <InputGroup>
+                          <Input
+                            placeholder=" "
+                            autoComplete="off"
+                            type="text"
+                            onChange={(e) => {
+                              setConfirmpassword(e.target.value);
+                            }}
+                          ></Input>
+                          <FormLabel>Confirm password:</FormLabel>
+                        </InputGroup>
+                      </FormControl>
+                      <Text mt={2} color="gray">
+                        <Link
+                          color="blue.700"
+                          onClick={() => {
+                            if (showOld) {
+                              setShowOld(!showOld);
+                            } else {
+                              setShowOld(!showOld);
+                            }
                           }}
-                        ></Input>
-                        <FormLabel>New Password:</FormLabel>
-
-                        <InputRightElement width="3.5rem">
-                          <Button h="1.50rem" size="sm" onClick={handleClick}>
-                            {show ? <FaRegEyeSlash /> : <FaRegEye />}
-                          </Button>
-                        </InputRightElement>
-                      </InputGroup>
-                    </FormControl>
-                    <FormControl
-                      mt={3}
-                      variant="floating"
-                      id="confirmpassword"
-                      isRequired
-                    >
-                      <InputGroup>
-                        <Input
-                          placeholder=" "
-                          autoComplete="off"
-                          type="text"
-                          onChange={(e) => {
-                            setConfirmpassword(e.target.value);
-                          }}
-                        ></Input>
-                        <FormLabel>Confirm password:</FormLabel>
-                      </InputGroup>
-                    </FormControl>
-                    <Text mt={2} color="gray">
-                      <Link
-                        color="blue.700"
+                        >
+                          {showOld ? "Forgot Password?" : "Use Old Password"}
+                        </Link>
+                      </Text>
+                      <Button
+                        colorScheme="blue"
+                        // width="50%"
+                        style={{ marginTop: 15 }}
                         onClick={() => {
                           if (showOld) {
-                            setShowOld(!showOld);
+                            changePassword();
                           } else {
-                            setShowOld(!showOld);
+                            openModal();
                           }
                         }}
+                        isLoading={passLoading}
                       >
-                        {showOld ? "Forgot Password?" : "Use Old Password"}
-                      </Link>
-                    </Text>
-                    <Button
-                      colorScheme="blue"
-                      // width="50%"
-                      style={{ marginTop: 15 }}
-                      onClick={() => {
-                        if (showOld) {
-                          changePassword();
-                        } else {
-                          openModal();
-                        }
-                      }}
-                      isLoading={passLoading}
-                    >
-                      Update Password
-                    </Button>
-                  </Box>
+                        Update Password
+                      </Button>
+                    </Box>
+                  )}
                 </VStack>
               </Box>
             </Container>

@@ -39,7 +39,7 @@ const updateComment = asyncHandler(async (req, res) => {
 const fetchComments = asyncHandler(async (req, res) => {
   const { videoId } = req.body;
   try {
-    const comments = await DevTubeComment.find({ videoId });
+    const comments = await DevTubeComment.find({ videoId }).populate("userId","name img");
     res.status(200).json(comments);
   } catch (error) {
     res.status(400);
@@ -47,12 +47,18 @@ const fetchComments = asyncHandler(async (req, res) => {
   }
 });
 const deleteComment = asyncHandler(async (req, res) => {
-  const { commentId } = req.body;
+  const  {commentId}  = req.body;
   const userId = req.user._id;
   try {
     const comment = await DevTubeComment.findById(commentId);
     const video = await DevTubeVideo.findById(comment.videoId);
-    if (video.userId == userId || comment.userId == userId) {
+    
+    
+
+    if (
+      String(userId) == String(video.userId) ||
+      String(userId) == String(comment.userId)
+    ) {
       const deleteComment = await DevTubeComment.findByIdAndDelete(commentId);
       if (deleteComment) {
         await fetchComments(req, res);

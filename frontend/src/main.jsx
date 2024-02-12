@@ -9,10 +9,10 @@ import store from "../State/store.jsx";
 const activeLabelStyles = {
   transform: "scale(0.85) translateY(-24px)",
 };
-
 const colors = {
   blue: {
     700: "#1A56DB",
+    500:"#3F83F8",
     600: "#3182CE",
   },
   gray: {
@@ -61,11 +61,11 @@ export const theme = extendTheme({
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <>
     <Provider store={store}>
       <ChakraProvider theme={theme}>
         <App />
       </ChakraProvider>
     </Provider>
-  </React.StrictMode>
+  </>
 );
