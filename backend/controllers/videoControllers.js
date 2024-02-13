@@ -5,6 +5,8 @@ const asyncHandler = require("express-async-handler");
 const { fetchUserHistory } = require("./userControllers");
 const DevTubeVideo = require("../models/videoModal");
 const DevTubeViews = require("../models/viewModal");
+const DevTubeUserPlaylist = require("../models/playListModal");
+const { default: mongoose } = require("mongoose");
 
 const fetchVideos = asyncHandler(async (req, res) => {
   const key = req.user._id;
@@ -68,9 +70,10 @@ const updateVideo = asyncHandler(async (req, res) => {
 
 const deleteVideo = asyncHandler(async (req, res) => {
   try {
-    const videoId = req.params.id;
-    const video = await VideoModal.findById(videoId);
+    let videoId = req.params.id;
 
+    const video = await VideoModal.findById(videoId);
+    videoId = new mongoose.Types.ObjectId(videoId);
     if (!video) {
       res.status(404);
       throw new Error("Video not found");
@@ -80,6 +83,10 @@ const deleteVideo = asyncHandler(async (req, res) => {
       res.status(401);
       throw new Error("Can not Delete Video.");
     } else {
+      await DevTubeUserPlaylist.updateMany(
+        { "videos.videoId": videoId },
+        { $pull: { videos: { videoId: videoId } } }
+      );
       const deleteVideoData = await DevTubeVideoData.findOneAndDelete({
         videoId: req.params.id,
       });
@@ -94,6 +101,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error);
     res.status(400);
     throw new Error("Can not delete video");
   }
@@ -105,8 +113,8 @@ const findVideo = asyncHandler(async (req, res) => {
     const user = await DevTubeUser.findById(video.userId).select(
       "name img subscribers"
     );
-   
-    res.status(200).json({...video._doc,user});
+
+    res.status(200).json({ ...video._doc, user });
   } catch (error) {
     res.status(400);
     throw new Error("Can not find video");
@@ -125,7 +133,7 @@ const addView = asyncHandler(async (req, res) => {
       throw new Error("Video not found.");
     }
 
-    let findUser=await DevTubeViews.findOne({videoId})
+    let findUser = await DevTubeViews.findOne({ videoId });
 
     if (!findUser) {
       // If findUser doesn't exist, create a new instance
@@ -133,18 +141,17 @@ const addView = asyncHandler(async (req, res) => {
         videoId: videoId,
         user: [userId],
       });
-      await findUser.save()
+      await findUser.save();
       video.views += 1;
       await video.save();
     }
-    if(!findUser.user.includes(userId)){
-      findUser.user.push(userId)
+    if (!findUser.user.includes(userId)) {
+      findUser.user.push(userId);
       await findUser.save();
       video.views += 1;
       await video.save();
     }
 
-    
     // video.views += 1;
     // await video.save();
 
@@ -342,7 +349,9 @@ const like = asyncHandler(async (req, res) => {
     const videoId = req.params.id;
     const userId = req.user._id;
 
-    const findVideo = await DevTubeVideo.findById(videoId).select("likes disLikes");
+    const findVideo = await DevTubeVideo.findById(videoId).select(
+      "likes disLikes"
+    );
 
     if (findVideo) {
       const likes = findVideo.likes;
