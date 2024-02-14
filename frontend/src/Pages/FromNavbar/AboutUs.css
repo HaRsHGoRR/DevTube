@@ -1,0 +1,79 @@
+.about-us-container {
+    text-align: center;
+  }
+  
+  .header {
+    background-color: #1e88e5;
+    color: #ffffff;
+    padding: 20px;
+  }
+  
+  .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .card {
+    background-color: #263238;
+    color: #ffffff;
+    margin: 20px;
+    padding: 20px;
+    max-width: 345px;
+    transition: transform 0.2s;
+    border-radius: 10px;
+    overflow: hidden;
+    flex: 1;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+  }
+  
+  .card img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .content {
+    padding: 10px;
+  }
+  
+  .social-media {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .social-media a {
+    margin: 0 5px;
+    color: #ffffff;
+    transition: transform 0.2s;
+  }
+  
+  .social-media a:hover {
+    transform: scale(1.2);
+  }
+  
+  .footer {
+    background-color: #1e88e5;
+    color: #ffffff;
+    padding: 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+  
+  /* Media Queries for Responsive Design */
+  @media (max-width: 768px) {
+    .card-container {
+      flex-direction: column;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .card {
+      max-width: 100%;
+    }
+  }
+  
