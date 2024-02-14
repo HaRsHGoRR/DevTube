@@ -8,6 +8,9 @@ const { mailer } = require("../config/mailers");
 const DevTubeVideo = require("../models/videoModal");
 const jwt = require("jsonwebtoken");
 const DevTubeVideoData = require("../models/devTubeVideoData");
+const DevTubeComment = require("../models/commentModal");
+const DevTubeUserPlaylist = require("../models/playListModal");
+const DevTubeViews = require("../models/viewModal");
 
 // user crud apis
 const authenticateUser = asyncHandler(async (req, res) => {
@@ -194,8 +197,65 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
   try {
-    await DevTubeUser.findByIdAndDelete(req.user._id);
+    // remove videos from playlist
+    await DevTubeVideo.find({ userId: userId })
+      .then(async (videos) => {
+        const videoIdsToRemove = videos.map((video) => video._id); // Get array of video IDs
+
+        // Update all playlists to remove video references created by the userId
+        await DevTubeUserPlaylist.updateMany(
+          { "videos.videoId": { $in: videoIdsToRemove } }, // Match playlists with videos created by the userId
+          { $pull: { videos: { videoId: { $in: videoIdsToRemove } } } }, // Pull/remove videos with the given videoIds
+          { multi: true } // Update multiple documents
+        );
+
+        // update all watchLater to remove video references credted by userId
+        await DevTubeUser.updateMany(
+          {
+            watchLater: { $in: videoIdsToRemove },
+          },
+          { $pull: { watchLater: { $in: videoIdsToRemove } } },
+          { multi: true }
+        );
+
+        // remove history data from videoData
+        let historyData = await DevTubeVideoData.find({
+          videoId: { $in: videoIdsToRemove },
+        });
+        historyData = historyData.map((data) => String(data._id));
+
+        await DevTubeUser.updateMany(
+          { history: { $in: historyData } },
+          { $pull: { history: { $in: historyData } } },
+          { multi: true }
+        );
+
+        await DevTubeUserPlaylist.deleteMany({ userId });
+
+        await DevTubeVideoData.deleteMany(
+          {
+            videoId: { $in: videoIdsToRemove },
+          },
+          { multi: true }
+        );
+
+        await DevTubeUser.updateMany(
+          { $or: [{ subscribers: userId }, { subscribedUsers: userId }] },
+          { $pull: { subscribers: userId, subscribedUsers: userId } }
+        );
+
+        await DevTubeComment.deleteMany({
+          $or: [{ userId }, { videoId: { $in: videoIdsToRemove } }],
+        });
+        await DevTubeVideo.deleteMany({ userId });
+        await DevTubeUser.findByIdAndDelete(userId);
+      })
+
+      .catch((error) => {
+        throw Error(error);
+      });
 
     res.status(200).json({
       status: "DELETED",
@@ -383,7 +443,7 @@ const subscribe = asyncHandler(async (req, res) => {
 
     res.status(200).json({ status: "Subscription Successful" });
   } catch (error) {
-    throw error
+    throw error;
   }
 });
 
@@ -441,18 +501,16 @@ const manageSubscription = asyncHandler(async (req, res) => {
         { new: true }
       );
 
-      const sub=await DevTubeUser.findByIdAndUpdate(
+      const sub = await DevTubeUser.findByIdAndUpdate(
         req.params.id,
         { $pull: { subscribers: req.user._id } },
         { new: true }
       );
 
-      res
-        .status(200)
-        .json({
-          status: "Unsubscription Successful",
-          subscribers: sub.subscribers.length,
-        });
+      res.status(200).json({
+        status: "Unsubscription Successful",
+        subscribers: sub.subscribers.length,
+      });
     } else {
       // User is not subscribed, perform subscription
       await DevTubeUser.findByIdAndUpdate(
@@ -461,27 +519,26 @@ const manageSubscription = asyncHandler(async (req, res) => {
         { new: true }
       );
 
-     const sub = await DevTubeUser.findByIdAndUpdate(
-       req.params.id,
-       { $addToSet: { subscribers: req.user._id } },
-       { new: true }
-     );
+      const sub = await DevTubeUser.findByIdAndUpdate(
+        req.params.id,
+        { $addToSet: { subscribers: req.user._id } },
+        { new: true }
+      );
 
-      res
-        .status(200)
-        .json({
-          status: "Subscription Successful",
-          subscribers: sub.subscribers.length,
-        });
+      res.status(200).json({
+        status: "Subscription Successful",
+        subscribers: sub.subscribers.length,
+      });
     }
   } catch (error) {
-    res.status(400).json({ error: error.message || "Unable to manage subscription." });
+    res
+      .status(400)
+      .json({ error: error.message || "Unable to manage subscription." });
   }
 });
 
 // Usage
 // To manage subscription (subscribe if not subscribed, unsubscribe if subscribed): manageSubscription(req, res, { params: { id: 'someUserId' } });
-
 
 // watch later apis
 
