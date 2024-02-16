@@ -4,7 +4,7 @@ const Contact = () => {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="max-w-md w-full mx-5 my-5">
-        <div className="max-w-md w-full" style={{ backgroundColor: 'rgba(0, 162, 255, 0.1)', padding: '20px',  borderRadius: '10px' }}>
+        <div className="max-w-md w-full" style={{ backgroundColor: 'rgba(0, 162, 255, 0.1)', padding: '20px', border: '1px solid #000', borderRadius: '10px' }}>
           <div style={{ textAlign: 'center' }}>
             <h2 className="text-xl font-semibold mb-6">Contact Us</h2>
           </div>
@@ -18,7 +18,7 @@ const Contact = () => {
                 name="name"
                 placeholder="Your Name"
                 required
-                style={{ color: 'black' }} // Added style to change text color to black
+                style={{ color: 'black' }}
               />
             </div>
             <div>
@@ -30,7 +30,7 @@ const Contact = () => {
                 name="email"
                 placeholder="Your Email"
                 required
-                style={{ color: 'black' }} // Added style to change text color to black
+                style={{ color: 'black' }}
               />
             </div>
             <div>
@@ -42,11 +42,11 @@ const Contact = () => {
                 rows="4"
                 placeholder="Your Message"
                 required
-                style={{ color: 'black' }} // Added style to change text color to black
+                style={{ color: 'black' }}
               ></textarea>
             </div>
             <button
-              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
+              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors font-bold" // Added font-bold style
               type="submit"
             >
               Submit
