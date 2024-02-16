@@ -46,7 +46,7 @@ const AboutUs = () => {
         </div>
       </div>
       <div className="footer">
-        <p>© 2024 Company Name. All rights reserved.</p>
+        <p>© 2024 DevTube. All rights reserved.</p>
       </div>
     </div>
   );
