@@ -5,6 +5,8 @@ import "./index.css";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { Provider } from "react-redux";
 import store from "../State/store.jsx";
+import '@fortawesome/fontawesome-free/css/all.css';
+
 
 const activeLabelStyles = {
   transform: "scale(0.85) translateY(-24px)",
