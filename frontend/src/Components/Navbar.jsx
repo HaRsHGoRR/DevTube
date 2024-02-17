@@ -41,9 +41,11 @@ const Navbar = () => {
           drop1 ? "mb-[292px]" : "mb-[70px]"
         } w-full`}
       >
+        
         <nav
           id="navbar"
-          className={` border-gray-200 text-white bg-gray-900 select-none  w-full fixed top-0 left-0 z-50`}
+          className={` border-gray-200 text-white bg-gray-950 select-none w-full fixed top-0 left-0 z-50`}
+
         >
           <div className=" flex flex-wrap items-center justify-between mx-auto p-4">
             <div className="flex space-x-1">

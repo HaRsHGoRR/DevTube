@@ -20,6 +20,8 @@ import { useDispatch, useSelector } from "react-redux";
 import User from "./Pages/User";
 import Error from "./Pages/Error";
 import Video from "./Components/Video";
+import '@fortawesome/fontawesome-free/css/all.css';
+
 
 function App() {
   const [showSide, setShowSide] = useState(false);
