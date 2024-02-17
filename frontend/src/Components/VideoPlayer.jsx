@@ -3,11 +3,14 @@ import { AspectRatio, useToast } from "@chakra-ui/react";
 import Abc from "./Abc";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchHistory, fetchHistorySuccess } from "../../State/History/historyAction";
+import {
+  fetchHistory,
+  fetchHistorySuccess,
+} from "../../State/History/historyAction";
 
 const VideoPlayer = ({ video, token }) => {
   const { data } = useSelector((state) => state.history);
-  const {info}=useSelector((state)=>state.user)
+  const { info } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [history, setHistory] = useState(data);
   const [time, setTime] = useState(0);
@@ -69,15 +72,12 @@ const VideoPlayer = ({ video, token }) => {
   };
   return (
     <div>
-    
       <div className="">
-       
         <video
-         
           ref={videoRef}
           onPause={handlePause}
           onEnded={handlePause}
-          class=" "
+          class=" w-full md:h-[23rem] h-[12rem] object-contain"
           controls
           src={video.videoUrl}
         ></video>

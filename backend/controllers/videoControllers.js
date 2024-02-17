@@ -33,7 +33,6 @@ const addVideo = asyncHandler(async (req, res) => {
       await fetchVideos(req, res);
     }
   } catch (error) {
-    console.log(error);
     res.status(400);
     throw new Error("Can not create video");
   }

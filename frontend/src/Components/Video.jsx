@@ -10,6 +10,8 @@ import {
   IconButton,
   Spacer,
   Spinner,
+  Tag,
+  TagLabel,
   Text,
   WrapItem,
   useToast,
@@ -41,6 +43,7 @@ import {
   PopoverCloseButton,
   PopoverAnchor,
 } from "@chakra-ui/react";
+import Abc from "./Abc";
 
 const Video = () => {
   const [loaing, setLoading] = useState(false);
@@ -229,7 +232,6 @@ const Video = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
   return (
     <>
       {token ? (
@@ -255,17 +257,17 @@ const Video = () => {
                 <div className="md:w-8/12 ">
                   {" "}
                   <div className="">
-                    <VideoPlayer video={videodetails} token={token}/>
-                    
+                    <VideoPlayer video={videodetails} token={token} />
+                    {/* <Abc video={videodetails} /> */}
                   </div>
                   <div className=" w-full p-1 ">
                     {desc ? (
-                      <div className=" pb-2">
+                      <div className=" pb-2   p-1 rounded-md bg-gray-800">
                         <div className="flex">
                           <Heading
                             mt={1}
                             as="h4"
-                            size="md"
+                            size="sm"
                             noOfLines={2}
                             textTransform="capitalize"
                           >
@@ -282,16 +284,44 @@ const Video = () => {
                         </div>
 
                         <hr className="h-px my-2  border-0 bg-gray-700"></hr>
+
                         <Heading
+                          color={"blue.700"}
                           mt={2}
-                          mb={4}
+                          mb={1}
                           as="h4"
-                          size="xs"
+                          size="md"
                           textTransform="capitalize"
                         >
                           {videodetails.title}
                         </Heading>
-                        <div className="flex justify-evenly">
+                        <Heading
+                          mt={2}
+                          mb={2}
+                          as="h5"
+                          size="sm"
+                          textTransform="capitalize"
+                        >
+                          {videodetails.desc}
+                        </Heading>
+
+                        {videodetails?.tags[0]?.split(",").map((tag) => {
+                          return (
+                            <span>
+                              <Tag
+                                marginEnd={1}
+                                size={"md"}
+                                colorScheme="blue"
+                                borderRadius="full"
+                                variant="solid"
+                              >
+                                <TagLabel>{tag}</TagLabel>
+                              </Tag>
+                            </span>
+                          );
+                        })}
+
+                        <div className="flex justify-evenly mt-1">
                           <Box p="1">
                             <Center>
                               {" "}
@@ -357,11 +387,9 @@ const Video = () => {
                       <>
                         {" "}
                         <div
-                          className=" cursor-pointer md:cursor-default"
+                          className=" cursor-pointer transition duration-300 ease-in-out  bg-gray-800 rounded-md mt-1 hover:bg-gray-700  p-1"
                           onClick={() => {
-                            if (window.innerWidth <= 768) {
-                              setDesc(!desc);
-                            }
+                            setDesc(!desc);
                           }}
                         >
                           {" "}
@@ -379,7 +407,8 @@ const Video = () => {
                               units: [" ", "K ", "M ", "G ", "T "],
                               space: true,
                             })}{" "}
-                            Views <span className="font-extrabold"> &middot; </span>{" "}
+                            Views{" "}
+                            <span className="font-extrabold"> &middot; </span>{" "}
                             {getTime(videodetails.createdAt)}
                             <span className="text-white ml-2 md:hidden">
                               ...more
@@ -595,11 +624,15 @@ const Video = () => {
                     )}
                   </div>
                   <div className="  w-full ">
-                    <Comments videoId={id} videodetails={videodetails}/>
+                    <Comments videoId={id} videodetails={videodetails} />
                   </div>
                 </div>
                 <div className=" md:w-4/12 ">
-                  <RelatedVideo tags={videodetails.tags} token={token}  videoId={id}/>
+                  <RelatedVideo
+                    tags={videodetails.tags}
+                    token={token}
+                    videoId={id}
+                  />
                 </div>
               </div>
             </>

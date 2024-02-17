@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./styles.css";
 
-const Abc = ({video}) => {
+const Abc = ({ video }) => {
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [wasPaused, setWasPaused] = useState(false);
@@ -329,7 +329,7 @@ const Abc = ({video}) => {
       videoRef.current.removeEventListener("loadeddata", () => {});
       videoRef.current.removeEventListener("timeupdate", () => {});
       videoRef.current.removeEventListener("volumechange", () => {});
-      theaterBtnRef.current.removeEventListener("click", toggleTheaterMode);
+      // theaterBtnRef.current.removeEventListener("click", toggleTheaterMode);
       fullScreenBtnRef.current.removeEventListener(
         "click",
         toggleFullScreenMode
@@ -451,7 +451,6 @@ const Abc = ({video}) => {
             👎
           </button>
 
-         
           <button class="speed-btn wide-btn" onClick={changePlaybackSpeed}>
             1x
           </button>
@@ -463,7 +462,7 @@ const Abc = ({video}) => {
               />
             </svg>
           </button>
-         
+
           <button class="full-screen-btn">
             <svg class="open" viewBox="0 0 24 24">
               <path
@@ -480,9 +479,7 @@ const Abc = ({video}) => {
           </button>
         </div>
       </div>
-      <video src={video}>
-        
-      </video>
+      <video src={video}></video>
     </div>
   );
 };

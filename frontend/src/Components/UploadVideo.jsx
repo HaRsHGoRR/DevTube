@@ -18,6 +18,7 @@ import {
   Textarea,
   FormHelperText,
   Progress,
+  Tooltip,
 } from "@chakra-ui/react";
 import axios from "axios";
 
@@ -30,27 +31,32 @@ import {
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { FileUploader } from "react-drag-drop-files";
-import FileUpload from "./FileUpload";
 
 const fileTypes = ["JPG", "PNG"];
 const allowedVideoTypes = ["MP4"];
 
 const UploadVideo = ({ isOpen, onClose, onOpen }) => {
+  const regex = /^[a-zA-Z0-9, ]+$/;
   const { data: user } = useSelector((state) => state.user);
   useEffect(() => {
     return () => {};
   }, []);
 
   const toast = useToast();
+
   const [errors, setErrors] = useState({
     title: "",
     desc: "",
     tags: "",
+    imgUrl: "",
+    videoUrl: "",
   });
   const [flags, setFlags] = useState({
     title: false,
     desc: false,
     tags: false,
+    imgUrl: false,
+    videoUrl: false,
   });
 
   const [videodetails, setVideodetails] = useState({
@@ -63,10 +69,14 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
   });
   const [imgProcess, setimgProcess] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const [vidProcess, setvidProcess] = useState(0);
   const [imgFile, setImgFile] = useState(null);
   const [vidFile, setVidFile] = useState(null);
+  const [img, setImg] = useState(null);
+  const [vid, setVid] = useState(null);
+  const [vidName, setVidName] = useState("");
 
   const handleChange = (e) => {
     setVideodetails((prev) => {
@@ -82,6 +92,69 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
 
   const addVideo = async () => {
     setLoading(true);
+
+    if (!videodetails.title) {
+      setFlags({ ...flags, title: true });
+      setErrors({ ...errors, title: "Please enter Title" });
+      setLoading(false);
+      return;
+    }
+    if (videodetails.title.length >= 100) {
+      setFlags({ ...flags, title: true });
+      setErrors({ ...errors, title: "Title is too long!" });
+      setLoading(false);
+      return;
+    }
+
+    if (!videodetails.desc) {
+      setFlags({ ...flags, desc: true });
+      setErrors({ ...errors, desc: "Please enter Description" });
+      setLoading(false);
+      return;
+    }
+    if (videodetails.desc.length >= 100) {
+      setFlags({ ...flags, desc: true });
+      setErrors({ ...errors, desc: "Description is too long!" });
+      setLoading(false);
+      return;
+    }
+
+    if (
+      videodetails.tags.length != 0 &&
+      videodetails.tags &&
+      !regex.test(videodetails.tags.join(","))
+    ) {
+      setFlags({ ...flags, tags: true });
+      setErrors({
+        ...errors,
+        tags: "Tags must contain only alphanumeric characters and commas.",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!videodetails.imgUrl) {
+      setFlags({ ...flags, imgUrl: true });
+      setErrors({
+        ...errors,
+        imgUrl: "Please upload Thumbnail.",
+      });
+      setLoading(false);
+
+      return;
+    }
+
+    if (!videodetails.videoUrl) {
+      setFlags({ ...flags, videoUrl: true });
+      setErrors({
+        ...errors,
+        videoUrl: "Please Upload Video.",
+      });
+      setLoading(false);
+
+      return;
+    }
+
     try {
       const config = {
         headers: {
@@ -111,99 +184,195 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
         imgUrl: "",
         length: 0,
       });
-    } catch (error) {}
-
-    setLoading(true);
-  };
-
-  const handleFileChange = (event, type) => {
-    const file = event.target.files[0];
-    setFile(file);
-    if (!type == "img") {
-      return;
+      setLoading(false);
+      onClose();
+    } catch (error) {
+      setLoading(false);
     }
-
-    var video = document.createElement("video");
-    video.preload = "metadata";
-
-    video.onloadedmetadata = function () {
-      window.URL.revokeObjectURL(video.src);
-      setVideodetails((prev) => {
-        return { ...prev, length: video.duration };
-      });
-    };
-
-    video.src = URL.createObjectURL(file);
+    setLoading(false);
   };
 
-  const handleImgChange = async (file) => {
-    await handleUpload(file, "img");
+  const handleImgChange = async (e) => {
+    const file = e.target.files[0];
+    let imageUrl;
+    if (file) {
+      imageUrl = URL.createObjectURL(file);
+
+      if (imageUrl != img) {
+        setLoading(true);
+        setImg(imageUrl);
+        try {
+          await handleUpload(file, "img");
+        } catch (error) {
+          // Handle error, if needed
+        } finally {
+          setTimeout(() => {
+            setLoading(false);
+          }, 2000);
+        }
+      }
+    }
   };
-  const handleVidChange = async (file) => {
-    var video = document.createElement("video");
-    video.preload = "metadata";
 
-    video.onloadedmetadata = function () {
-      window.URL.revokeObjectURL(video.src);
-      setVideodetails((prev) => {
-        return { ...prev, length: video.duration };
-      });
-    };
+  const handleVidChange = async (e) => {
+    const file = e.target.files[0];
+    let videoUrl;
 
-    video.src = URL.createObjectURL(file);
-    await handleUpload(file, "vid");
+    if (file) {
+      videoUrl = URL.createObjectURL(file);
+
+      if (videoUrl != vid) {
+        setLoading(true);
+        setUploading(true);
+        setVid(videoUrl);
+        setVidName("");
+
+        try {
+          var video = document.createElement("video");
+          video.preload = "metadata";
+          video.onloadedmetadata = function () {
+            window.URL.revokeObjectURL(video.src);
+            setVideodetails((prev) => {
+              return { ...prev, length: video.duration };
+            });
+          };
+          video.src = URL.createObjectURL(file);
+
+          await handleUploadPromise(file, "vid");
+        } catch (error) {
+          setFlags({ ...flags, videoUrl: true });
+          setErrors({ ...errors, videoUrl: "Can not Upload Video" });
+        } finally {
+          setUploading(false);
+          setLoading(false);
+          setVidName(file.name);
+        }
+      } else {
+        setVidName("Already Uploaded.");
+      }
+    }
   };
 
   const handleUpload = async (file, url) => {
-    setLoading(true);
-    if (file) {
-      const storage = getStorage();
-      const fileName = user._id + new Date().getTime();
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
+    // if (file) {
+    //   const storage = getStorage();
+    //   const fileName = user._id + new Date().getTime();
+    //   const storageRef = ref(storage, fileName);
+    //   const uploadTask = uploadBytesResumable(storageRef, file);
 
-      await uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          if (url == "img") {
-            setimgProcess(Number(progress.toFixed(2)));
-          } else {
-            setvidProcess(Number(progress.toFixed(2)));
-          }
+    //   await uploadTask.on(
+    //     "state_changed",
+    //     (snapshot) => {
+    //       const progress =
+    //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    //       if (url == "img") {
+    //         setimgProcess(Number(progress.toFixed(2)));
+    //       } else {
+    //         setvidProcess(Number(progress.toFixed(2)));
+    //       }
 
-          switch (snapshot.state) {
-            case "paused":
-              break;
-            case "running":
-              break;
-            default:
-              break;
-          }
-        },
-        (error) => {
-          setLoading(false);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+    //       switch (snapshot.state) {
+    //         case "paused":
+    //           break;
+    //         case "running":
+    //           break;
+    //         default:
+    //           break;
+    //       }
+    //     },
+    //     (error) => {},
+    //     () => {
+    //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+    //         if (url == "img") {
+    //           setVideodetails((prev) => {
+    //             return { ...prev, imgUrl: downloadURL };
+    //           });
+    //         } else {
+    //           setVideodetails((prev) => {
+    //             return { ...prev, videoUrl: downloadURL };
+    //           });
+    //         }
+    //       });
+    //     }
+    //   );
+    // } else {
+    //   // console.warn("No file selected.");
+    // }
+
+    return new Promise((resolve, reject) => {
+      if (file) {
+        const storage = getStorage();
+        const fileName = user._id + new Date().getTime();
+        const storageRef = ref(storage, fileName);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
             if (url == "img") {
-              setVideodetails((prev) => {
-                return { ...prev, imgUrl: downloadURL };
-              });
+              setimgProcess(Number(progress.toFixed(2)));
             } else {
-              setVideodetails((prev) => {
-                return { ...prev, videoUrl: downloadURL };
-              });
+              setvidProcess(Number(progress.toFixed(2)));
             }
-          });
-        }
-      );
-      setLoading(false);
-    } else {
-      console.warn("No file selected.");
+
+            switch (snapshot.state) {
+              case "paused":
+                break;
+              case "running":
+                break;
+              default:
+                break;
+            }
+          },
+          (error) => {
+            reject(error);
+          },
+          async () => {
+            // getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            //   if (url == "img") {
+            //     setVideodetails((prev) => {
+            //       return { ...prev, imgUrl: downloadURL };
+            //     });
+            //   } else {
+            //     setVideodetails((prev) => {
+            //       return { ...prev, videoUrl: downloadURL };
+            //     });
+            //   }
+            // });
+
+            try {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              if (url == "img") {
+                setVideodetails((prev) => {
+                  return { ...prev, imgUrl: downloadURL };
+                });
+              } else {
+                setVideodetails((prev) => {
+                  return { ...prev, videoUrl: downloadURL };
+                });
+              }
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
+          }
+        );
+      } else {
+        // console.warn("No file selected.");
+        reject("No file selected");
+      }
+    });
+  };
+
+  const handleUploadPromise = async (file, url) => {
+    try {
+      await handleUpload(file, url);
+    } catch (error) {
+      
+      throw error; 
     }
-    setLoading(false);
   };
 
   const OverlayTwo = () => (
@@ -223,6 +392,11 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
         closeOnOverlayClick={false}
         isOpen={isOpen}
         onClose={() => {
+          setImg(null);
+          setimgProcess(0);
+          setvidProcess(0);
+          setImgFile(null);
+          setVidFile(null);
           setFlags({
             title: false,
             desc: false,
@@ -241,6 +415,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
             desc: "",
             tags: "",
           });
+          setLoading(false);
           onClose();
         }}
         size={{ base: "sm", md: "md" }}
@@ -250,10 +425,10 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
         <ModalContent bg="gray.900" color="white">
           <ModalHeader>
             <Center color="blue.700">
-              <span className="text-2xl font-bold">Upload Video</span>
+              <span className="text-2xl font-bold">Create Video</span>
             </Center>
           </ModalHeader>
-          <ModalCloseButton />
+          {!loading && <ModalCloseButton />}
           <ModalBody pb={6}>
             <Box w="100%" p={4} borderRadius="lg" borderWidth="1px">
               <FormControl
@@ -345,7 +520,6 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
                 mt={4}
                 id="first-name"
                 variant="floating"
-                isRequired
                 isInvalid={flags.tags}
               >
                 <Input
@@ -353,10 +527,9 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
                   placeholder=" "
                   autoComplete="off"
                   onChange={(e) => {
-                    handleChange(e);
-
-                    const regex = /^[a-zA-Z0-9, ]+$/;
                     if (e.target.value.length == 0) {
+                      setVideodetails({ ...videodetails, tags: [] });
+
                       return;
                     } else if (!regex.test(e.target.value)) {
                       setFlags({ ...flags, tags: true });
@@ -371,6 +544,8 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
                         tags: "",
                       });
                     }
+
+                    handleTags(e);
                   }}
                 ></Input>
                 <FormLabel>Tags:&nbsp;</FormLabel>
@@ -380,47 +555,147 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
                 <FormErrorMessage>{errors.tags}</FormErrorMessage>
               </FormControl>
 
-              <FormControl mt={2}>
-                {" "}
-                {imgProcess != 0 && imgProcess != 100 && (
-                  <div className="m-5">
-                    <Progress hasStripe value={imgProcess} />
-                  </div>
-                )}
-                {(imgProcess == 0 || imgProcess == 100) && (
-                  <FileUploader
-                    label="Upload or drop a thumbnail right here"
-                    handleChange={handleImgChange}
-                    name="imgFile"
-                    types={fileTypes}
-                  />
-                )}
+              <FormControl
+                mt={2}
+                id="first-name"
+                // variant="floating"
+                isRequired
+                isInvalid={flags.imgUrl}
+              >
+                <Center>
+                  {" "}
+                  <FormErrorMessage>{errors.imgUrl}</FormErrorMessage>
+                </Center>
+                <Center>
+                  {" "}
+                  <Tooltip hasArrow label="Upload Thumbnail" bg="blue.700">
+                    <div className=" mt-2 w-full  text-center items-center flex justify-center">
+                      <label htmlFor="imageInput">
+                        <img
+                          className={`${
+                            img ? " h-[8rem] w-[12.5rem] " : "h-12 "
+                          } rounded-lg object-fill ${
+                            loading ? " cursor-no-drop " : " cursor-pointer "
+                          }`}
+                          src={img || "../../public/uploadImg.jpg"}
+                          alt="Click Here to upload Thumbnail"
+                        />
+                      </label>
+                      <input
+                        name="imgUrl"
+                        type="file"
+                        id="imageInput"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={handleImgChange}
+                        disabled={loading}
+                      />
+                    </div>
+                  </Tooltip>
+                </Center>
+                <Center>
+                  {" "}
+                  <FormHelperText>Thumbnail</FormHelperText>
+                </Center>
               </FormControl>
 
-              <FormControl mt={2}>
-                {" "}
-                {vidProcess != 0 && vidProcess != 100 && (
-                  <div className="m-5">
-                    <Progress hasStripe value={vidProcess} />
-                  </div>
-                )}
-                {(vidProcess == 0 || vidProcess == 100) && (
-                  <FileUploader
-                    label="Upload or drop a Video right here"
-                    handleChange={handleVidChange}
-                    name="vidFile"
-                    types={allowedVideoTypes}
-                  />
-                )}
+              <FormControl
+                mt={4}
+                id="first-name"
+                // variant="floating"
+                isRequired
+                isInvalid={flags.videoUrl}
+              >
+                <Center>
+                  <FormErrorMessage>{errors.videoUrl}</FormErrorMessage>
+                </Center>
+                <Center mt={1}>
+                  <Tooltip hasArrow label="Upload Video" bg="blue.700">
+                    <div className="flex items-center justify-center w-full">
+                      <label
+                        htmlFor="dropzone-file"
+                        className={`flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg ${
+                          loading ? " cursor-no-drop " : " cursor-pointer "
+                        }   bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600`}
+                      >
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <svg
+                            className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 20 16"
+                          >
+                            <path
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                            />
+                          </svg>
+                          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span className="font-semibold">
+                              Click to upload
+                            </span>{" "}
+                            or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            MP4
+                          </p>
+                        </div>
+                      </label>
+                      <input
+                        id="dropzone-file"
+                        type="file"
+                        className="hidden"
+                        disabled={loading}
+                        accept="video/*"
+                        onChange={(e) => {
+                          handleVidChange(e);
+                        }}
+                      />
+                    </div>
+                  </Tooltip>
+                </Center>
+                <Center>
+                  {" "}
+                  <FormHelperText>
+                    {vidProcess == 100 ? <>{vidName}</> : <>Video in MP4</>}
+                  </FormHelperText>
+                </Center>
               </FormControl>
+
+              {uploading && (
+                <>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-base font-medium text-blue-700 dark:text-white">
+                      Uploading...
+                    </span>
+                    <span className="text-sm font-medium text-blue-700 dark:text-white">
+                      {vidProcess}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                    <div
+                      className="bg-blue-600 h-2.5 rounded-full"
+                      style={{ width: `${vidProcess}%` }}
+                    ></div>
+                  </div>
+                </>
+              )}
             </Box>
           </ModalBody>
 
           <ModalFooter>
             <Center>
-              {/* isLoading={loading} */}
-              <Button colorScheme="blue" mr={3} onClick={addVideo}>
-                Upload
+              <Button
+                isLoading={loading}
+                colorScheme="blue"
+                mr={3}
+                onClick={addVideo}
+              >
+                Create
               </Button>
             </Center>
           </ModalFooter>

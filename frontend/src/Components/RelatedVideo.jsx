@@ -20,7 +20,6 @@ const RelatedVideo = ({ tags, token, videoId }) => {
         },
       };
       const { data } = await axios.get(`/api/video/tags?tags=${tag}`, config);
-      console.log(data);
       setVideos(data);
     } catch (error) {
       console.log(error);
