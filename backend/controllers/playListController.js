@@ -1,12 +1,17 @@
 const DevTubeUserPlaylist = require("../models/playListModal");
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
+const DevTubeVideo = require("../models/videoModal");
 
 const createPlaylist = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   let { name, desc, videoIds } = req.body;
   videoIds = JSON.parse(videoIds);
   try {
+
+    if(videoIds.length==0){
+        throw new Error("Please select one video")
+    }
     const playlist = new DevTubeUserPlaylist({
       name,
       desc,
@@ -25,7 +30,6 @@ const createPlaylist = asyncHandler(async (req, res) => {
       throw new Error("Can not create Playlist.");
     }
   } catch (error) {
-    console.log(error);
     res.status(500);
 
     throw new Error(error);
@@ -140,7 +144,6 @@ const removeVideoToPlaylist = asyncHandler(async (req, res) => {
       res.status(200).json(playlists);
     }
   } catch (error) {
-    console.log(error);
     res.status(500);
     throw error;
   }

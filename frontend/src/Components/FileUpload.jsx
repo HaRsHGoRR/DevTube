@@ -83,6 +83,8 @@ const FileUpload = () => {
       const fileName = new Date().getTime() + selectedFile.name;
       const storageRef = ref(storage, fileName);
       const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+
+      
       uploadTask.on(
         "state_changed",
         (snapshot) => {

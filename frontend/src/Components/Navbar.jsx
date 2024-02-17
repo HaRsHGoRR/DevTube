@@ -9,12 +9,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { FiLogOut } from "react-icons/fi";
 import { Tooltip } from "@chakra-ui/react";
 import { logoutUserRequest } from "../../State/User/userAction";
+import { RiVideoUploadLine } from "react-icons/ri";
+import UploadVideo from "./UploadVideo";
+
 const Navbar = () => {
   const { data: isLogin } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isUpload,
+    onOpen: onUpload,
+    onClose: onUploadClose,
+  } = useDisclosure();
+
   const [drop1, setDrop1] = useState(false);
   const navigate = useNavigate();
+
+  const handleUpload = () => {};
 
   const handleLogout = async () => {
     localStorage.removeItem("userInfo");
@@ -56,8 +67,25 @@ const Navbar = () => {
               {/* Login Signup*/}
 
               {isLogin ? (
-                <div className="flex space-x-2">
-                  <div className="relative hidden md:block">
+                <div className="flex space-x-2 justify-center items-center">
+                  <Tooltip
+                    hasArrow
+                    textTransform="capitalize"
+                    label="Upload Video"
+                    bg="blue.700"
+                  >
+                    <div
+                      onClick={() => {
+                        onUpload();
+                      }}
+                      className="hidden cursor-pointer md:block bg-blue-700 p-2 hover:bg-white hover:text-blue-700  transition duration-300 ease-in-out rounded-full "
+                    >
+                      <span className="text-2xl cursor-pointer ">
+                        <RiVideoUploadLine />
+                      </span>
+                    </div>
+                  </Tooltip>
+                  <div className="relative hidden md:block ">
                     <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                       <svg
                         className="w-4 h-4 text-gray-500 dark:text-gray-400"
@@ -108,6 +136,29 @@ const Navbar = () => {
                     Register / Login
                   </button>
                 </>
+              )}
+
+              {isLogin && (
+                <div className="my-auto mx-2">
+                  {" "}
+                  <Tooltip
+                    hasArrow
+                    textTransform="capitalize"
+                    label="Upload Video"
+                    bg="blue.700"
+                  >
+                    <div
+                      onClick={() => {
+                        onUpload();
+                      }}
+                      className="md:hidden cursor-pointer bg-blue-700 p-2 hover:bg-white hover:text-blue-700  transition duration-300 ease-in-out rounded-full "
+                    >
+                      <span className=" cursor-pointer ">
+                        <RiVideoUploadLine />
+                      </span>
+                    </div>
+                  </Tooltip>
+                </div>
               )}
               <button
                 onClick={() => {
@@ -261,6 +312,11 @@ const Navbar = () => {
         </nav>
       </div>
       <RegLog onClose={onClose} isOpen={isOpen} onOpen={onOpen} />
+      <UploadVideo
+        onClose={onUploadClose}
+        isOpen={isUpload}
+        onOpen={onUpload}
+      />
     </>
   );
 };

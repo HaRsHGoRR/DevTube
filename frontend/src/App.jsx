@@ -15,6 +15,7 @@ import PlaylistPage from "./Pages/FromSidebar/PlaylistPage";
 import AnalyticsPage from "./Pages/FromSidebar/AnalyticsPage";
 import YourVideos from "./Pages/FromSidebar/YourVideos";
 import { fetchUser } from "../State/User/userAction";
+import { fetchHistory } from "../State/History/historyAction";
 import { useDispatch, useSelector } from "react-redux";
 import User from "./Pages/User";
 import Error from "./Pages/Error";
@@ -33,6 +34,7 @@ function App() {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const fetchData = async () => {
       await dispatch(fetchUser(userInfo));
+      await dispatch(fetchHistory(userInfo));
     };
 
     if (!userInfo) {

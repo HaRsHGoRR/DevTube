@@ -2,16 +2,24 @@ import {
   Avatar,
   Button,
   Center,
+  Editable,
+  EditableInput,
+  EditablePreview,
   Flex,
   Heading,
+  Modal,
+  ModalBody,
+  ModalContent,
   Popover,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
   Text,
   WrapItem,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { format as getTime } from "timeago.js";
 import { MdDelete } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
 import axios from "axios";
@@ -22,6 +30,7 @@ import { useSelector } from "react-redux";
 import { Spinner } from "@chakra-ui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { NavLink } from "react-router-dom";
+import { useRef } from "react";
 
 const Comments = ({ videoId, videodetails }) => {
   const { token, _id, img } = useSelector((state) => state.user.data) || {
@@ -35,6 +44,10 @@ const Comments = ({ videoId, videodetails }) => {
   const toast = useToast();
   const [comments, setComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const commentInput = useRef(null);
+  const [editCom, setEditCom] = useState(false);
+  const [editId, setEditId] = useState(null);
 
   const fetchComments = async () => {
     setShowComments(true);
@@ -145,6 +158,37 @@ const Comments = ({ videoId, videodetails }) => {
     }
     setLoading(false);
   };
+  const editComment = async () => {
+    setLoading(true);
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await axios.put(
+        `/api/comment/${editId}`,
+        { videoId, desc: comment },
+        config
+      );
+      setComment("");
+      setComments(data);
+      setShow(true);
+      setSend(false);
+      setEditCom(false);
+    } catch (error) {
+      setLoading(false);
+      toast({
+        title: "Could not edit Comment.",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+    }
+    setLoading(false);
+  };
 
   return (
     <>
@@ -190,6 +234,20 @@ const Comments = ({ videoId, videodetails }) => {
                 </WrapItem>
 
                 <input
+                  ref={commentInput}
+                  onBlur={() => {
+                    if (editCom) {
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      if (!editCom) {
+                      addComment();
+                    } else {
+                      editComment();
+                    }
+                    }
+                  }}
                   id="message"
                   className="py-1 px-2 block  w-full text-sm  rounded-lg border bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Add a comment..."
@@ -203,7 +261,13 @@ const Comments = ({ videoId, videodetails }) => {
 
                 <span
                   className="cursor-pointer text-blue-700 text-xl "
-                  onClick={addComment}
+                  onClick={() => {
+                    if (!editCom) {
+                      addComment();
+                    } else {
+                      editComment();
+                    }
+                  }}
                 >
                   {!loading ? (
                     <>{send && <IoMdSend />}</>
@@ -246,10 +310,15 @@ const Comments = ({ videoId, videodetails }) => {
                         <div className="flex flex-col w-full">
                           <Text
                             fontSize="xs"
-                            textTransform={"capitalize"}
+                            // textTransform={"capitalize"}
                             color={"gray"}
                           >
-                            {comment.userId.name}
+                            {/* {comment.userId.name}&nbsp;&middot;&nbsp;
+                            {getTime(comment.createdAt)} */}
+                            {comment.userId.name.charAt(0).toUpperCase() +
+                              comment.userId.name.slice(1)}
+                            &nbsp;&middot;&nbsp;
+                            {getTime(comment.createdAt)}
                           </Text>
                           <Text fontSize="sm">{comment.desc}</Text>
                         </div>
@@ -280,7 +349,15 @@ const Comments = ({ videoId, videodetails }) => {
                                         <>
                                           {" "}
                                           <Flex alignItems="center">
-                                            <span className="hover:text-green-400">
+                                            <span
+                                              className="hover:text-green-400"
+                                              onClick={() => {
+                                                commentInput.current.focus();
+                                                setEditCom(true);
+                                                setComment(comment.desc);
+                                                setEditId(comment._id);
+                                              }}
+                                            >
                                               {" "}
                                               <MdEdit />
                                             </span>

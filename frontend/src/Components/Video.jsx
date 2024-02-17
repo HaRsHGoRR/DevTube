@@ -255,7 +255,7 @@ const Video = () => {
                 <div className="md:w-8/12 ">
                   {" "}
                   <div className="">
-                    <VideoPlayer video={videodetails} />
+                    <VideoPlayer video={videodetails} token={token}/>
                     
                   </div>
                   <div className=" w-full p-1 ">
@@ -598,8 +598,8 @@ const Video = () => {
                     <Comments videoId={id} videodetails={videodetails}/>
                   </div>
                 </div>
-                <div className="bg-green-700 md:w-4/12 ">
-                  <RelatedVideo tags={videodetails.tags} />
+                <div className=" md:w-4/12 ">
+                  <RelatedVideo tags={videodetails.tags} token={token}  videoId={id}/>
                 </div>
               </div>
             </>
