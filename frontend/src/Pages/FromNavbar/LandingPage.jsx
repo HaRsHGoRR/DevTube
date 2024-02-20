@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Box, Heading, Text, Flex, VStack, Center, Image } from "@chakra-ui/react";
 import { useSpring, animated } from "react-spring";
 
@@ -95,7 +95,9 @@ const Card = ({ title, description, image }) => {
       m="4"
       _hover={{ boxShadow: "lg", transform: "scale(1.05)" }}
     >
-      <Image src={image} alt={title} mb="4" />
+      <Box height="200px" width="100%" position="relative">
+        <Image src={image} alt={title} objectFit="cover" position="absolute" top="0" left="0" width="100%" height="100%" />
+      </Box>
       <Heading as="h3" size="md" mb="2" textAlign="center">
         {title}
       </Heading>
@@ -105,5 +107,7 @@ const Card = ({ title, description, image }) => {
     </Box>
   );
 };
+
+
 
 export default LandingPage;
