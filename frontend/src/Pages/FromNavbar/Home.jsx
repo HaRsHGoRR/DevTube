@@ -15,6 +15,7 @@ import FileUpload from "../../Components/FileUpload";
 import { useSelector } from "react-redux";
 import { ShowVideos } from "../../Components/ShowVideos";
 import { Spinner } from "flowbite-react";
+import LandingPage from "./LandingPage";
 const Home = () => {
    useEffect(() => {
      window.scrollTo(0, 0);
@@ -32,7 +33,9 @@ const Home = () => {
               <ShowVideos type={"random"} />{" "}
             </>
           ) : (
-            <>Home Page Please Login</>
+            <>
+            <LandingPage />
+            </>
           )}
         </>
       )}
