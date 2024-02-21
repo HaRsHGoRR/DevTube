@@ -10,7 +10,7 @@ const mailer = async (email) => {
       host: "smtp.gmail.com",
       port: 587,
       secure: false,
-      requireTLS: true,
+      requireTLS: false,
       auth: {
         user: process.env.EMAIL,
         pass: process.env.EMAIL_PASSWORD,

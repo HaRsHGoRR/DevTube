@@ -1,60 +1,112 @@
-import React from 'react';
+import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  InputGroup,
+  VStack,
+  WrapItem,
+  useToast,
+} from '@chakra-ui/react';
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
 const Contact = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const toast = useToast();
+
+  const handleClick = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Here you can perform form submission logic
+    // For demonstration, let's just show a toast message
+    toast({
+      title: 'Form Submitted',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
+  };
+
   return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="max-w-md w-full mx-5 my-5">
-        <div className="max-w-md w-full" style={{ backgroundColor: 'rgba(0, 162, 255, 0.1)', padding: '20px', border: '1px solid #000', borderRadius: '10px' }}>
-          <div style={{ textAlign: 'center' }}>
-            <h2 className="text-xl font-semibold mb-6">Contact Us</h2>
-          </div>
-          <form className="space-y-4">
-            <div>
-              <label className="block mb-1" htmlFor="name">Name</label>
-              <input
-                className="w-full border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:border-blue-400"
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      padding="20px"
+    >
+      <Box
+        maxW="md"
+        w="full"
+        bg="rgba(0, 0, 0, 0.2)" // Slightly lighter background color with some transparency
+        border="1px solid"
+        borderColor="white" // White border color
+        borderRadius="10px"
+        p="20px"
+      >
+        <Box textAlign="center" mb="6">
+          <h2 className="text-xl font-semibold text-white">Contact Us</h2> {/* White text color */}
+        </Box>
+        <form onSubmit={handleSubmit}>
+          <WrapItem mb="4">
+            <FormControl id="name" isRequired>
+              <FormLabel>Name:</FormLabel>
+              <Input
                 type="text"
-                id="name"
-                name="name"
                 placeholder="Your Name"
                 required
-                style={{ color: 'black' }}
+                color="white" // White text color
+                onChange={(e) => setName(e.target.value)}
               />
-            </div>
-            <div>
-              <label className="block mb-1" htmlFor="email">Email</label>
-              <input
-                className="w-full border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:border-blue-400"
+            </FormControl>
+          </WrapItem>
+          <WrapItem mb="4">
+            <FormControl id="email" isRequired>
+              <FormLabel>Email:</FormLabel>
+              <Input
                 type="email"
-                id="email"
-                name="email"
                 placeholder="Your Email"
                 required
-                style={{ color: 'black' }}
+                color="white" // White text color
+                onChange={(e) => setEmail(e.target.value.toLowerCase())}
               />
-            </div>
-            <div>
-              <label className="block mb-1" htmlFor="message">Message</label>
-              <textarea
-                className="w-full border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:border-blue-400"
-                id="message"
-                name="message"
-                rows="4"
+            </FormControl>
+          </WrapItem>
+          <WrapItem mb="4">
+            <FormControl id="message" isRequired>
+              <FormLabel>Message:</FormLabel>
+              <Input
+                type="text"
                 placeholder="Your Message"
                 required
-                style={{ color: 'black' }}
-              ></textarea>
-            </div>
-            <button
-              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors font-bold" // Added font-bold style
+                color="white" // White text color
+                onChange={(e) => setMessage(e.target.value)}
+              />
+            </FormControl>
+          </WrapItem>
+          <WrapItem>
+            <Button
+              bg="blue.500"
+              color="white"
+              _hover={{ bg: 'blue.600' }}
+              fontWeight="bold"
               type="submit"
+              width="100%"
             >
               Submit
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
+            </Button>
+          </WrapItem>
+        </form>
+      </Box>
+    </Box>
   );
 };
 
