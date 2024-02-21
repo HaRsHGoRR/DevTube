@@ -29,7 +29,7 @@ const mailer = async (email) => {
       otp: otp,
     };
   } catch (error) {
-    console.error("Error sending email:", error);
+    // console.error("Error sending email:", error);
     return {
       status: "failed",
       error: error.message,
