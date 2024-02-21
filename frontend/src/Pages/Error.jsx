@@ -27,7 +27,7 @@ const Error = () => {
       <Heading as="h1" size="xl" textAlign="center" color="blue.700" mb="4">
         Sorry, this page isn't available
       </Heading>
-      <Text fontSize="lg" textAlign="center" color="blue.600">
+      <Text fontSize="lg" textAlign="center" color="white.600">
         The link you followed may be broken, or the page may have been removed.
         Go back to the home page.
       </Text>
