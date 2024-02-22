@@ -87,7 +87,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
         { "videos.videoId": videoId },
         { $pull: { videos: { videoId: videoId } } }
       );
-      const deleteVideoData = await DevTubeVideoData.findOneAndDelete({
+      const deleteVideoData = await DevTubeVideoData.deleteMany({
         videoId: req.params.id,
       });
       const deletedVideo = await VideoModal.findByIdAndDelete(req.params.id);
@@ -164,7 +164,7 @@ const addView = asyncHandler(async (req, res) => {
       const videoIdString = String(videoId);
 
       if (
-        !user.history.some((item) => String(item.videoId._id) == videoIdString)
+        !user.history.some((item) => String(item.videoId?._id) == videoIdString)
       ) {
         videoData.timeCompleted = 0;
 
@@ -192,7 +192,6 @@ const addView = asyncHandler(async (req, res) => {
     res.status(200).json(sortedHistory);
   } catch (error) {
     res.status(400);
-
     throw new Error(error);
   }
 });

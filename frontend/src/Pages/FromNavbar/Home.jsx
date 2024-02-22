@@ -17,13 +17,13 @@ import { ShowVideos } from "../../Components/ShowVideos";
 import { Spinner } from "flowbite-react";
 import LandingPage from "./LandingPage";
 const Home = () => {
-   useEffect(() => {
-     window.scrollTo(0, 0);
-   }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const { data: user, error, loading } = useSelector((state) => state.user);
 
   return (
-    <div className="pt-5">
+    <div className=" pt-5 ">
       {loading ? (
         <></>
       ) : (
@@ -34,7 +34,7 @@ const Home = () => {
             </>
           ) : (
             <>
-            <LandingPage />
+              <LandingPage />
             </>
           )}
         </>

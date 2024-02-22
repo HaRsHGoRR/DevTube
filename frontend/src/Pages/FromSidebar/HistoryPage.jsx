@@ -66,7 +66,7 @@ const HistoryPage = () => {
             (video.timeCompleted * 100) / video?.videoId?.length
           );
 
-          return (
+         if(video?.videoId) return (
             <>
               <NavLink
                 to={`/video?id=${video.videoId?._id}`}
@@ -84,7 +84,7 @@ const HistoryPage = () => {
                   <img
                     className={`h-full  md:w-[246px] w-[10rem]  rounded-lg object-fill  
             `}
-                    src={video.videoId.imgUrl}
+                    src={video.videoId?.imgUrl}
                     alt="Click Here to upload Thumbnail"
                   />
                 </div>
@@ -98,7 +98,7 @@ const HistoryPage = () => {
                         noOfLines={{ base: 3, md: 2 }}
                         fontSize={{ base: "sm", md: "xl" }}
                       >
-                        {video.videoId.title}
+                        {video.videoId?.title}
                       </Text>
                     </div>
                     <div className=" ml-auto md:text-xl  cursor-pointer  hover:text-blue-700 ">
@@ -145,7 +145,7 @@ const HistoryPage = () => {
                       fontSize="sm"
                       textTransform={"capitalize"}
                     >
-                      {video.videoId.desc}
+                      {video.videoId?.desc}
                     </Text>
                   </div>
                 </div>

@@ -29,6 +29,7 @@ import { auth, provider } from "../FIreBase/Firebase";
 import { fetchUser } from "../../State/User/userAction";
 import axios from "axios";
 import { fetchHistory } from "../../State/History/historyAction";
+import { fetchVideos } from "../../State/Videos/videosAction";
 
 export default function RegLog({ isOpen, onOpen, onClose }) {
   const toast = useToast();
@@ -51,6 +52,8 @@ export default function RegLog({ isOpen, onOpen, onClose }) {
           localStorage.setItem("userInfo", JSON.stringify(data));
           await dispatch(fetchUser(data));
           await dispatch(fetchHistory(data));
+          await dispatch(fetchVideos(data));
+
           toast({
             title: "Success.",
             description: "Successfully connect to Google.",

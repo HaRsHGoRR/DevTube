@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { BiSolidBell } from "react-icons/bi";
+import LandingPage from "./FromNavbar/LandingPage";
 
 const User = () => {
   const location = useLocation();
@@ -241,7 +242,7 @@ const User = () => {
           </>
         </>
       ) : (
-        <>please login</>
+        <LandingPage />
       )}
     </div>
   );

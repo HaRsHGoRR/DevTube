@@ -21,7 +21,7 @@ const VideoPlayer = ({ video, token }) => {
     let presentVideo = null;
     if (history) {
       const isPresent = history.some((historyVideo) => {
-        if (historyVideo.videoId._id == video._id) {
+        if (historyVideo.videoId?._id == video._id) {
           presentVideo = historyVideo;
           return true;
         }

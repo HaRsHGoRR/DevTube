@@ -44,6 +44,7 @@ import {
   PopoverAnchor,
 } from "@chakra-ui/react";
 import { fetchHistory } from "../../State/History/historyAction";
+import LandingPage from "../Pages/FromNavbar/LandingPage";
 
 const Video = () => {
   const userData = useSelector((state) => state.user);
@@ -643,7 +644,7 @@ const Video = () => {
           )}
         </>
       ) : (
-        <> Please Login</>
+        <LandingPage />
       )}
     </>
   );

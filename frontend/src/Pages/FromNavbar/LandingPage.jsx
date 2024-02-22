@@ -1,5 +1,13 @@
 import React from "react";
-import { Box, Heading, Text, Flex, VStack, Center, Image } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  Text,
+  Flex,
+  VStack,
+  Center,
+  Image,
+} from "@chakra-ui/react";
 import { useSpring, animated } from "react-spring";
 
 const LandingPage = () => {
@@ -39,15 +47,21 @@ const LandingPage = () => {
       overflow="hidden"
     >
       <Center>
-        <VStack spacing={8} py={[10, 20]} px={[4, 8]} w="100%">
+        <VStack spacing={8} w="100%">
           <animated.div style={nameSpring}>
             <Heading as="h1" size="2xl" color="blue.500" textAlign="center">
               Welcome to DevTube!
             </Heading>
           </animated.div>
           <animated.div style={descriptionSpring}>
-            <Text fontSize={["lg", "xl"]} textAlign="center">
-              Discover and enjoy a world of captivating videos on DevTube. From entertaining vlogs to educational tutorials, DevTube has something for everyone.
+            <Text
+              fontSize={["lg", "xl"]}
+              textAlign="center"
+              w={{ base: "auto", md: "lg" }}
+            >
+              Discover and enjoy a world of captivating videos on DevTube. From
+              entertaining vlogs to educational tutorials, DevTube has something
+              for everyone.
             </Text>
           </animated.div>
           <animated.div style={whyChooseSpring}>
@@ -96,7 +110,16 @@ const Card = ({ title, description, image }) => {
       _hover={{ boxShadow: "lg", transform: "scale(1.05)" }}
     >
       <Box height="200px" width="100%" position="relative">
-        <Image src={image} alt={title} objectFit="cover" position="absolute" top="0" left="0" width="100%" height="100%" />
+        <Image
+          src={image}
+          alt={title}
+          objectFit="cover"
+          position="absolute"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+        />
       </Box>
       <Heading as="h3" size="md" mb="2" textAlign="center">
         {title}
@@ -107,7 +130,5 @@ const Card = ({ title, description, image }) => {
     </Box>
   );
 };
-
-
 
 export default LandingPage;

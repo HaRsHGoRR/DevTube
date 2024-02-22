@@ -28,14 +28,18 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { FileUploader } from "react-drag-drop-files";
+import { fetchVideosSuccess } from "../../State/Videos/videosAction";
+import { useNavigate } from "react-router-dom";
 
 const fileTypes = ["JPG", "PNG"];
 const allowedVideoTypes = ["MP4"];
 
 const UploadVideo = ({ isOpen, onClose, onOpen }) => {
+  const navigate=useNavigate()
+  const dispatch=useDispatch()
   const regex = /^[a-zA-Z0-9, ]+$/;
   const { data: user } = useSelector((state) => state.user);
 
@@ -172,6 +176,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
         config
       );
 
+
       setVideodetails({
         title: "",
         desc: "",
@@ -182,6 +187,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
       });
       setLoading(false);
       onClose();
+      navigate("/yourvideos");
     } catch (error) {
       setLoading(false);
     }

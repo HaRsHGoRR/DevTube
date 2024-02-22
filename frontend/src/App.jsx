@@ -21,6 +21,7 @@ import User from "./Pages/User";
 import Error from "./Pages/Error";
 import Video from "./Components/Video";
 import '@fortawesome/fontawesome-free/css/all.css';
+import { fetchVideos } from "../State/Videos/videosAction";
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
     const fetchData = async () => {
       await dispatch(fetchUser(userInfo));
       await dispatch(fetchHistory(userInfo));
+      await  dispatch(fetchVideos(userInfo));
     };
 
     if (!userInfo) {

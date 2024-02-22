@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchUser } from "../../State/User/userAction";
 import OtpModal from "./OtpModal";
 import { fetchHistory } from "../../State/History/historyAction";
+import { fetchVideos } from "../../State/Videos/videosAction";
 const Signup = ({ onClose }) => {
   const [name, setName] = useState();
   const [email, setEmail] = useState();
@@ -185,6 +186,7 @@ const Signup = ({ onClose }) => {
       localStorage.setItem("userInfo", JSON.stringify(data));
       await dispatch(fetchUser(data));
        await dispatch(fetchHistory(data));
+       await dispatch(fetchVideos(data));
       
       setLoading(false);
       onClose();

@@ -22,6 +22,7 @@ import { useDispatch } from "react-redux";
 import OtpModal from "./OtpModal";
 import { SendToBack } from "lucide-react";
 import { fetchHistory } from "../../State/History/historyAction";
+import { fetchVideos } from "../../State/Videos/videosAction";
 
 const Login = ({ onClose }) => {
   const [email, setEmail] = useState();
@@ -82,6 +83,7 @@ const Login = ({ onClose }) => {
       localStorage.setItem("userInfo", JSON.stringify(data));
       await dispatch(fetchUser(data));
       await dispatch(fetchHistory(data));
+      await dispatch(fetchVideos(data));
 
       setLoading(false);
       onClose();
