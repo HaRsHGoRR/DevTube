@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUser } from "../../State/User/userAction";
 import OtpModal from "./OtpModal";
-
+import { fetchHistory } from "../../State/History/historyAction";
 const Signup = ({ onClose }) => {
   const [name, setName] = useState();
   const [email, setEmail] = useState();
@@ -184,6 +184,8 @@ const Signup = ({ onClose }) => {
 
       localStorage.setItem("userInfo", JSON.stringify(data));
       await dispatch(fetchUser(data));
+       await dispatch(fetchHistory(data));
+      
       setLoading(false);
       onClose();
       toast({

@@ -651,26 +651,58 @@ const deleteWatchLater = asyncHandler(async (req, res) => {
 });
 
 // history apis
+// const fetchUserHistory = asyncHandler(async (req, res) => {
+//   const userId = req.user._id;
+//   try {
+//     const userHistory = await DevTubeUser.findById(userId)
+//       .populate({
+//         path: "history",
+//         model: "DevTubeVideoData", // Assuming the name of the model is 'DevTubeVideoData'
+//         options: { sort: { updatedAt: -1 } }, // Sort by 'updatedAt' in descending order
+//         populate: {
+//           path: "videoId",
+//           model: "DevTubeVideo", // Assuming the name of the model is 'DevTubeVideo'
+//         },
+//       })
+//       .select("-password")
+
+//     res.status(200).json(userHistory.history);
+//   } catch (error) {
+//     res.status(500);
+//     throw new Error("Can not load History.");
+//   }
+// });
+
 const fetchUserHistory = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   try {
     const userHistory = await DevTubeUser.findById(userId)
       .populate({
         path: "history",
-        model: "DevTubeVideoData", // Assuming the name of the model is 'DevTubeVideoData'
-        options: { sort: { updatedAt: -1 } }, // Sort by 'updatedAt' in descending order
+        model: "DevTubeVideoData",
+        options: { sort: { updatedAt: -1 } },
         populate: {
           path: "videoId",
-          model: "DevTubeVideo", // Assuming the name of the model is 'DevTubeVideo'
+          model: "DevTubeVideo",
+
+          populate: {
+            path: "userId",
+            model: "DevTubeUser",
+            select: "name", // Select only the 'name' field from the user document
+          },
         },
       })
       .select("-password"); // Exclude the 'password' field
+
+    // Extracting user's name from populated field and including it in each history item
+
     res.status(200).json(userHistory.history);
   } catch (error) {
     res.status(500);
     throw new Error("Can not load History.");
   }
 });
+
 const deleteUserHistory = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   try {

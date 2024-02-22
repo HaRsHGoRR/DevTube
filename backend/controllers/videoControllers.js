@@ -101,7 +101,6 @@ const deleteVideo = asyncHandler(async (req, res) => {
       }
     }
   } catch (error) {
-    console.log(error);
     res.status(400);
     throw new Error("Can not delete video");
   }
@@ -307,7 +306,6 @@ const tag = asyncHandler(async (req, res) => {
     });
 
     const videosWithUser = await Promise.all(videoPromises);
-
     res.status(200).json(videosWithUser);
     // res.status(200).json(videos);
   } catch (error) {

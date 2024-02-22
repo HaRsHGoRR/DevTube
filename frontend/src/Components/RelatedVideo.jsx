@@ -123,9 +123,9 @@ const RelatedVideo = ({ tags, token, videoId }) => {
               </div>
             );
         })}
-
+    
       {videos?.length == 1 && (
-        <div className="text-center ">No related Videos</div>
+        <div className="text-center ">No related Videos </div>
       )}
     </div>
   );

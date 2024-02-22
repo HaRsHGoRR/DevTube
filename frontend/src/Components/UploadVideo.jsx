@@ -38,9 +38,6 @@ const allowedVideoTypes = ["MP4"];
 const UploadVideo = ({ isOpen, onClose, onOpen }) => {
   const regex = /^[a-zA-Z0-9, ]+$/;
   const { data: user } = useSelector((state) => state.user);
-  useEffect(() => {
-    return () => {};
-  }, []);
 
   const toast = useToast();
 
@@ -77,7 +74,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
   const [img, setImg] = useState(null);
   const [vid, setVid] = useState(null);
   const [vidName, setVidName] = useState("");
-
+  useEffect(() => {}, []);
   const handleChange = (e) => {
     setVideodetails((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
@@ -112,7 +109,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
       setLoading(false);
       return;
     }
-    if (videodetails.desc.length >= 100) {
+    if (videodetails.desc.length >= 5000) {
       setFlags({ ...flags, desc: true });
       setErrors({ ...errors, desc: "Description is too long!" });
       setLoading(false);
@@ -154,7 +151,6 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
 
       return;
     }
-
     try {
       const config = {
         headers: {
@@ -254,51 +250,6 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
   };
 
   const handleUpload = async (file, url) => {
-    // if (file) {
-    //   const storage = getStorage();
-    //   const fileName = user._id + new Date().getTime();
-    //   const storageRef = ref(storage, fileName);
-    //   const uploadTask = uploadBytesResumable(storageRef, file);
-
-    //   await uploadTask.on(
-    //     "state_changed",
-    //     (snapshot) => {
-    //       const progress =
-    //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //       if (url == "img") {
-    //         setimgProcess(Number(progress.toFixed(2)));
-    //       } else {
-    //         setvidProcess(Number(progress.toFixed(2)));
-    //       }
-
-    //       switch (snapshot.state) {
-    //         case "paused":
-    //           break;
-    //         case "running":
-    //           break;
-    //         default:
-    //           break;
-    //       }
-    //     },
-    //     (error) => {},
-    //     () => {
-    //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-    //         if (url == "img") {
-    //           setVideodetails((prev) => {
-    //             return { ...prev, imgUrl: downloadURL };
-    //           });
-    //         } else {
-    //           setVideodetails((prev) => {
-    //             return { ...prev, videoUrl: downloadURL };
-    //           });
-    //         }
-    //       });
-    //     }
-    //   );
-    // } else {
-    //   // console.warn("No file selected.");
-    // }
-
     return new Promise((resolve, reject) => {
       if (file) {
         const storage = getStorage();
@@ -370,8 +321,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
     try {
       await handleUpload(file, url);
     } catch (error) {
-      
-      throw error; 
+      throw error;
     }
   };
 

@@ -1,12 +1,15 @@
 import axios from "axios";
-import { FETCH_HISTORY_SUCCESS,FETCH_HISTORY_REQUEST,FETCH_HISTORY_FAILURE } from "./historyTypes";
+import {
+  FETCH_HISTORY_SUCCESS,
+  FETCH_HISTORY_REQUEST,
+  FETCH_HISTORY_FAILURE,
+} from "./historyTypes";
 
 export const fetchHistoryRequest = () => {
   return {
     type: FETCH_HISTORY_REQUEST,
   };
 };
-
 
 export const fetchHistorySuccess = (history) => {
   return {
@@ -23,18 +26,17 @@ export const fetchHistoryFailure = (error) => {
 };
 
 export const fetchHistory = (user) => {
-  
   return async (dispatch) => {
     dispatch(fetchHistoryRequest());
     if (user) {
       try {
         const token = user.token;
-         const config = {
-           headers: {
-             "Content-type": "application/json",
-             Authorization: `Bearer ${token}`,
-           },
-         };
+        const config = {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        };
         const { data } = await axios.get("/api/user/history", config);
 
         if (data) {
@@ -46,30 +48,6 @@ export const fetchHistory = (user) => {
       }
     } else {
       dispatch(fetchHistoryFailure("User not exist"));
-    }
-  };
-};
-
-export const updateUser = ({ img, name, token }) => {
-  return async (dispatch) => {
-    dispatch(fetchUserRequest());
-
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const { data } = await axios.put(
-        "/api/user/update",
-        { img, name },
-        config
-      );
-      if (data) {
-        dispatch(fetchUserSuccess(data));
-      }
-    } catch (error) {
-      dispatch(fetchUserFailure("Can not Update."));
     }
   };
 };

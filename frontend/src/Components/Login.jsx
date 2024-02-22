@@ -21,6 +21,7 @@ import { fetchUser } from "../../State/User/userAction";
 import { useDispatch } from "react-redux";
 import OtpModal from "./OtpModal";
 import { SendToBack } from "lucide-react";
+import { fetchHistory } from "../../State/History/historyAction";
 
 const Login = ({ onClose }) => {
   const [email, setEmail] = useState();
@@ -80,6 +81,8 @@ const Login = ({ onClose }) => {
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
       await dispatch(fetchUser(data));
+      await dispatch(fetchHistory(data));
+
       setLoading(false);
       onClose();
     } catch (error) {
@@ -106,7 +109,6 @@ const Login = ({ onClose }) => {
       const config = {
         headers: {
           "Content-type": "application/json",
-          
         },
       };
 
@@ -114,14 +116,14 @@ const Login = ({ onClose }) => {
         "/api/user/forgotpassword",
         {
           email: email,
-          password:npassword,
+          password: npassword,
         },
         config
       );
 
       setLoading(false);
-      setForgot(false)
-      
+      setForgot(false);
+
       // onClose();
       toast({
         title: "Password Changed.",
@@ -189,7 +191,6 @@ const Login = ({ onClose }) => {
     setLoading(false);
   };
 
- 
   return (
     <>
       <VStack spacing="5px">
@@ -231,8 +232,8 @@ const Login = ({ onClose }) => {
               <Link
                 color="blue.700"
                 onClick={() => {
-                   setPassword("");
-                   setNpassword("");
+                  setPassword("");
+                  setNpassword("");
                   setForgot(!forgot);
                 }}
               >
@@ -295,7 +296,6 @@ const Login = ({ onClose }) => {
                 ></Input>
 
                 <FormLabel>Confirm Password:</FormLabel>
-                
               </InputGroup>
             </FormControl>
 

@@ -23,7 +23,7 @@ import { MdOutlinePlaylistAdd } from "react-icons/md";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import VideoPlayer from "./VideoPlayer";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Comments from "./Comments";
 import RelatedVideo from "./RelatedVideo";
 import { IoAddCircleOutline, IoCloseOutline } from "react-icons/io5";
@@ -43,9 +43,11 @@ import {
   PopoverCloseButton,
   PopoverAnchor,
 } from "@chakra-ui/react";
-import Abc from "./Abc";
+import { fetchHistory } from "../../State/History/historyAction";
 
 const Video = () => {
+  const userData = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [loaing, setLoading] = useState(false);
   const [desc, setDesc] = useState(false);
   const { token, _id } = useSelector((state) => state.user.data) || {
@@ -214,6 +216,7 @@ const Video = () => {
   };
 
   useEffect(() => {
+    setDesc(false);
     if (window.innerWidth <= 768) {
       setMobile(true);
     }
@@ -222,6 +225,7 @@ const Video = () => {
       if (id && token) {
         await addView();
         await fetchVideoDetails();
+        await dispatch(fetchHistory(userData.data));
       }
       setLoading(false);
     };
@@ -305,7 +309,7 @@ const Video = () => {
                           {videodetails.desc}
                         </Heading>
 
-                        {videodetails?.tags[0]?.split(",").map((tag) => {
+                        {videodetails?.tags.map((tag) => {
                           return (
                             <span>
                               <Tag

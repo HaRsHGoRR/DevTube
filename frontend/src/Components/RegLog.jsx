@@ -28,6 +28,7 @@ import {
 import { auth, provider } from "../FIreBase/Firebase";
 import { fetchUser } from "../../State/User/userAction";
 import axios from "axios";
+import { fetchHistory } from "../../State/History/historyAction";
 
 export default function RegLog({ isOpen, onOpen, onClose }) {
   const toast = useToast();
@@ -49,6 +50,7 @@ export default function RegLog({ isOpen, onOpen, onClose }) {
 
           localStorage.setItem("userInfo", JSON.stringify(data));
           await dispatch(fetchUser(data));
+          await dispatch(fetchHistory(data));
           toast({
             title: "Success.",
             description: "Successfully connect to Google.",
@@ -59,6 +61,7 @@ export default function RegLog({ isOpen, onOpen, onClose }) {
           });
           onClose();
         } catch (error) {
+          // console.log(error);
           toast({
             title: "Failed to connect with Google.",
             // description: error.response.data.message,
@@ -73,6 +76,7 @@ export default function RegLog({ isOpen, onOpen, onClose }) {
       })
       .catch(async (error) => {
         // console.log(error);
+
         toast({
           title: "Failed to continue with Google.",
           // description: error.response.data.message,
