@@ -51,3 +51,32 @@ export const fetchHistory = (user) => {
     }
   };
 };
+
+ export const clearHistory =  (user) => {
+   return async (dispatch) => {
+     dispatch(fetchHistoryRequest());
+     if (user) {
+       try {
+         const token = user.token;
+         const config = {
+           headers: {
+             "Content-type": "application/json",
+             Authorization: `Bearer ${token}`,
+           },
+         };
+         const { data } = await axios.delete("/api/user/history", config);
+
+         if (data) {
+          
+           dispatch(fetchHistorySuccess(data));
+         }
+       } catch (error) {
+         dispatch(fetchHistoryFailure("Couldn't Clear History."));
+       }
+     } else {
+       dispatch(fetchHistoryFailure("User not exist"));
+     }
+   };
+ };
+
+
