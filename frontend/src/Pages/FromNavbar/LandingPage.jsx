@@ -7,10 +7,13 @@ import {
   VStack,
   Center,
   Image,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useSpring, animated } from "react-spring";
+import RegLog from "../../Components/RegLog";
 
 const LandingPage = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const nameSpring = useSpring({
     from: { opacity: 0, translateY: -20 },
     to: { opacity: 1, translateY: 0 },
@@ -45,7 +48,9 @@ const LandingPage = () => {
       backgroundRepeat="no-repeat"
       minHeight="100vh"
       overflow="hidden"
+
     >
+      <RegLog onClose={onClose} isOpen={isOpen} onOpen={onOpen} />
       <Center>
         <VStack spacing={8} w="100%">
           <animated.div style={nameSpring}>
@@ -64,6 +69,18 @@ const LandingPage = () => {
               for everyone.
             </Text>
           </animated.div>
+          <div className="md:hidden " >
+            <button
+              type="button"
+              onClick={() => {
+                onOpen();
+              }}
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 md:mt-0 mt-3  "
+            >
+              Register / Login
+            </button>
+          </div>
+
           <animated.div style={whyChooseSpring}>
             <Text fontSize={["xl", "2xl"]} fontWeight="bold" textAlign="center">
               Why Choose DevTube?

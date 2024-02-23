@@ -51,7 +51,7 @@ const Navbar = () => {
               <img
                 src="https://flowbite.com/docs/images/logo.svg"
                 className="h-8 cursor-pointer"
-                alt="Flowbite Logo"
+                alt="Devtube"
               />
               <NavLink
                 to="/"
