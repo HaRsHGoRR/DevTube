@@ -16,6 +16,7 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import aveta from "aveta";
@@ -24,26 +25,33 @@ import axios from "axios";
 import { deleteVideo, fetchVideos } from "../../../State/Videos/videosAction";
 import getTime from "format-duration";
 import LandingPage from "../FromNavbar/LandingPage";
+import EditVideo from "../../Components/EditVideo";
 
 const YourVideos = () => {
   const { data: videos, loading, error } = useSelector((state) => state.videos);
+  const [editVideo, setEditVideo] = useState(null);
 
   const dispatch = useDispatch();
   const { data: user } = useSelector((state) => state.user);
   const toast = useToast();
+  const {
+    isOpen: isEdit,
+    onOpen: onEdit,
+    onClose: onEditClose,
+  } = useDisclosure();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
-    dispatch(fetchVideos(user));
-  }, []);
+    if (!videos) dispatch(fetchVideos(user));
+  }, [videos]);
 
   const handleDelete = async (id) => {
     try {
       await dispatch(deleteVideo(user, id));
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast({
         title: "Could not delete Video.",
         status: "error",
@@ -147,7 +155,6 @@ const YourVideos = () => {
               </div>
             </div>
           )}
-
           {!loading && videos?.length == 0 && (
             <span className="mx-auto">No videos found.</span>
           )}
@@ -162,7 +169,7 @@ const YourVideos = () => {
                   <>
                     <NavLink
                       to={`/video?id=${video?._id}`}
-                      className="  w-11/12 md:w-6/12 md:h-[138px]  h-[6.5rem]  flex gap-2 cursor-pointer transition duration-300 ease-in-out hover:bg-gray-800  rounded-md  md:p-2 p-1"
+                      className="  w-11/12 md:w-6/12 md:h-[138px]   h-[6.5rem]  flex gap-2 cursor-pointer transition duration-300 ease-in-out hover:bg-gray-800  rounded-md  md:p-2 p-1"
                     >
                       <div className="shrink-0  relative">
                         <img
@@ -219,7 +226,11 @@ const YourVideos = () => {
                                         <Flex alignItems="center">
                                           <span
                                             className="hover:text-green-400"
-                                            onClick={() => {}}
+                                            onClick={() => {
+                                              // console.log(video);
+                                              setEditVideo(video);
+                                              onEdit();
+                                            }}
                                           >
                                             {" "}
                                             <MdEdit />
@@ -275,6 +286,15 @@ const YourVideos = () => {
                 );
               })}
           </>
+          {editVideo && (
+            <EditVideo
+              setEditVideo={setEditVideo}
+              video={editVideo}
+              isOpen={isEdit}
+              onOpen={onEdit}
+              onClose={onEditClose}
+            />
+          )}
         </div>
       ) : (
         <>

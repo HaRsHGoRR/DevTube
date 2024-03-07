@@ -33,8 +33,7 @@ const Navbar = () => {
     // window.location.replace();
   };
 
-  return (
-    //
+  return ( 
     <>
       <div
         className={` md:mb-[68px]   ${
@@ -43,7 +42,7 @@ const Navbar = () => {
       >
         <nav
           id="navbar"
-          className={` border-gray-200 text-white bg-gray-900 select-none w-full fixed top-0 left-0 z-50`}
+          className={` border-gray-200 text-white bg-gray-900   select-none w-full fixed top-0 left-0 z-50`}
         >
           <div className=" flex flex-wrap items-center justify-between mx-auto p-4">
             <div className="flex space-x-1">

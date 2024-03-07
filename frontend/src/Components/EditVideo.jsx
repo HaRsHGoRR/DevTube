@@ -30,14 +30,13 @@ import {
 } from "firebase/storage";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { FileUploader } from "react-drag-drop-files";
-import { fetchVideosSuccess } from "../../State/Videos/videosAction";
 import { useNavigate } from "react-router-dom";
+import { fetchVideosSuccess } from "../../State/Videos/videosAction";
 
 const fileTypes = ["JPG", "PNG"];
 const allowedVideoTypes = ["MP4"];
 
-const UploadVideo = ({ isOpen, onClose, onOpen }) => {
+const EditVideo = ({ isOpen, onClose, onOpen, video, setEditVideo }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const regex = /^[a-zA-Z0-9, ]+$/;
@@ -61,13 +60,14 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
   });
 
   const [videodetails, setVideodetails] = useState({
-    title: "",
-    desc: "",
-    tags: [],
-    videoUrl: "",
-    imgUrl: "",
-    length: 0,
+    title: video.title,
+    desc: video.desc,
+    tags: video.tags,
+    videoUrl: video.videoUrl,
+    imgUrl: video.imgUrl,
+    length: video.length,
   });
+
   const [imgProcess, setimgProcess] = useState(0);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -163,8 +163,8 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
       };
       const tags = JSON.stringify(videodetails.tags);
 
-      const { data } = await axios.post(
-        "/api/video",
+      const { data } = await axios.put(
+        `/api/video/update/${video._id}`,
         {
           title: videodetails.title,
           desc: videodetails.desc,
@@ -185,9 +185,18 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
         length: 0,
       });
       setLoading(false);
+      setEditVideo(null);
       onClose();
-      await dispatch(fetchVideosSuccess(data));
-      navigate("/yourvideos");
+      dispatch(fetchVideosSuccess(data));
+      toast({
+        title: "Video updated.",
+        // description: "We've created your account for you.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+      //   navigate("/yourvideos");
     } catch (error) {
       setLoading(false);
     }
@@ -287,18 +296,6 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
             reject(error);
           },
           async () => {
-            // getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            //   if (url == "img") {
-            //     setVideodetails((prev) => {
-            //       return { ...prev, imgUrl: downloadURL };
-            //     });
-            //   } else {
-            //     setVideodetails((prev) => {
-            //       return { ...prev, videoUrl: downloadURL };
-            //     });
-            //   }
-            // });
-
             try {
               const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
               if (url == "img") {
@@ -343,11 +340,11 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
 
   return (
     <div>
-      {" "}
       <Modal
         closeOnOverlayClick={false}
         isOpen={isOpen}
         onClose={() => {
+          setEditVideo(null);
           setImg(null);
           setimgProcess(0);
           setvidProcess(0);
@@ -381,7 +378,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
         <ModalContent bg="gray.900" color="white">
           <ModalHeader>
             <Center color="blue.700">
-              <span className="text-2xl font-bold">Create Video</span>
+              <span className="text-2xl font-bold">Edit Video</span>
             </Center>
           </ModalHeader>
           {!loading && <ModalCloseButton />}
@@ -395,9 +392,11 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
                 isInvalid={flags.title}
               >
                 <Input
+                  spellcheck="false"
                   name="title"
                   placeholder=" "
                   autoComplete="off"
+                  value={videodetails.title}
                   onChange={(e) => {
                     handleChange(e);
                     if (e.target.value.length == 0) {
@@ -436,7 +435,9 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
                 isInvalid={flags.desc}
               >
                 <Textarea
+                  spellcheck="false"
                   name="desc"
+                  value={videodetails.desc}
                   placeholder=" "
                   autoComplete="off"
                   onChange={(e) => {
@@ -480,6 +481,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
               >
                 <Input
                   name="tags"
+                  value={videodetails.tags}
                   placeholder=" "
                   autoComplete="off"
                   onChange={(e) => {
@@ -524,16 +526,14 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
                 </Center>
                 <Center>
                   {" "}
-                  <Tooltip hasArrow label="Upload Thumbnail" bg="blue.700">
+                  <Tooltip hasArrow label="Change Thumbnail" bg="blue.700">
                     <div className=" mt-2 w-full  text-center items-center flex justify-center">
                       <label htmlFor="imageInput">
                         <img
-                          className={`${
-                            img ? " h-[8rem] w-[12.5rem] " : "h-12 "
-                          } rounded-lg object-fill ${
+                          className={`h-[8rem] w-[12.5rem] rounded-lg object-fill ${
                             loading ? " cursor-no-drop " : " cursor-pointer "
                           }`}
-                          src={img || "../../public/uploadImg.jpg"}
+                          src={videodetails.imgUrl}
                           alt="Click Here to upload Thumbnail"
                         />
                       </label>
@@ -566,7 +566,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
                   <FormErrorMessage>{errors.videoUrl}</FormErrorMessage>
                 </Center>
                 <Center mt={1}>
-                  <Tooltip hasArrow label="Upload Video" bg="blue.700">
+                  <Tooltip hasArrow label="Change Video" bg="blue.700">
                     <div className="flex items-center justify-center w-full">
                       <label
                         htmlFor="dropzone-file"
@@ -651,7 +651,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
                 mr={3}
                 onClick={addVideo}
               >
-                Create
+                Update
               </Button>
             </Center>
           </ModalFooter>
@@ -661,4 +661,4 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
   );
 };
 
-export default UploadVideo;
+export default EditVideo;
