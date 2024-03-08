@@ -91,7 +91,7 @@ const EditVideo = ({ isOpen, onClose, onOpen, video, setEditVideo }) => {
     });
   };
 
-  const addVideo = async () => {
+  const updateVideo = async () => {
     setLoading(true);
 
     if (!videodetails.title) {
@@ -649,7 +649,7 @@ const EditVideo = ({ isOpen, onClose, onOpen, video, setEditVideo }) => {
                 isLoading={loading}
                 colorScheme="blue"
                 mr={3}
-                onClick={addVideo}
+                onClick={updateVideo}
               >
                 Update
               </Button>

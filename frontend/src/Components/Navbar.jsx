@@ -11,6 +11,7 @@ import { Tooltip } from "@chakra-ui/react";
 import { logoutUserRequest } from "../../State/User/userAction";
 import { RiVideoUploadLine } from "react-icons/ri";
 import UploadVideo from "./UploadVideo";
+import Seach from "./Seach";
 
 const Navbar = () => {
   const { data: isLogin } = useSelector((state) => state.user);
@@ -21,8 +22,14 @@ const Navbar = () => {
     onOpen: onUpload,
     onClose: onUploadClose,
   } = useDisclosure();
+  const {
+    isOpen: isSearch,
+    onOpen: onSearch,
+    onClose: onSearchClose,
+  } = useDisclosure();
 
   const [drop1, setDrop1] = useState(false);
+
   const navigate = useNavigate();
 
   const handleUpload = () => {};
@@ -33,7 +40,7 @@ const Navbar = () => {
     // window.location.replace();
   };
 
-  return ( 
+  return (
     <>
       <div
         className={` md:mb-[68px]   ${
@@ -103,8 +110,14 @@ const Navbar = () => {
                       </svg>
                       <span className="sr-only">Search icon</span>
                     </div>
+                    {/* in laptop  */}
                     <input
+                      onClick={() => {
+                        setDrop1(!drop1);
+                        onSearch();
+                      }}
                       type="text"
+                      name="search"
                       id="search-navbar"
                       className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Search"
@@ -226,7 +239,13 @@ const Navbar = () => {
                       />
                     </svg>
                   </div>
+                  {/* in mobile */}
                   <input
+                    onClick={() => {
+                      setDrop1(!drop1);
+                      onSearch();
+                    }}
+                    name="msearch"
                     type="text"
                     id="search-navbar"
                     className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -235,7 +254,12 @@ const Navbar = () => {
                 </div>
               )}
 
-              <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg  md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0  ">
+              {/* search result in mobile */}
+
+              <ul
+                className={`flex flex-col 
+                 p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg  md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0  `}
+              >
                 <li>
                   <NavLink
                     onClick={() => {
@@ -271,7 +295,6 @@ const Navbar = () => {
                 </li>
                 <li></li>
               </ul>
-
               {!isLogin ? (
                 <>
                   <div className="mt-2 md:hidden">
@@ -316,6 +339,7 @@ const Navbar = () => {
         isOpen={isUpload}
         onOpen={onUpload}
       />
+      <Seach onClose={onSearchClose} isOpen={isSearch} onOpen={onSearch} />
     </>
   );
 };

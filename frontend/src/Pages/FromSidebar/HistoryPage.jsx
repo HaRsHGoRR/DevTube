@@ -31,11 +31,11 @@ const HistoryPage = () => {
       await dispatch(fetchHistory(user));
     }
 
-    if (user) {
+    if (!history) {
       fetchData();
     }
     window.scrollTo(0, 0);
-  }, [user]);
+  }, [history]);
 
   const handleClearHistory = async () => {
     await dispatch(clearHistory(user));

@@ -175,6 +175,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
         },
         config
       );
+      setLoading(false);
 
       setVideodetails({
         title: "",
@@ -184,8 +185,27 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
         imgUrl: "",
         length: 0,
       });
-      setLoading(false);
+     
+
+      setImg(null);
+      setimgProcess(0);
+      setvidProcess(0);
+      setImgFile(null);
+      setVidFile(null);
+      setFlags({
+        title: false,
+        desc: false,
+        tags: false,
+      });
+     
+      setErrors({
+        title: "",
+        desc: "",
+        tags: "",
+      });
+      
       onClose();
+
       await dispatch(fetchVideosSuccess(data));
       navigate("/yourvideos");
     } catch (error) {
