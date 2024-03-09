@@ -4,7 +4,13 @@ import { MdDelete } from "react-icons/md";
 import {
   Button,
   Center,
+  Flex,
   HStack,
+  Heading,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Skeleton,
   Stack,
   Text,
@@ -20,6 +26,8 @@ import {
   fetchHistorySuccess,
 } from "../../../State/History/historyAction";
 import LandingPage from "../FromNavbar/LandingPage";
+import AddToWatchLater from "../../Components/AddToWatchLater";
+import { FaRegClock } from "react-icons/fa";
 
 const HistoryPage = () => {
   const dispatch = useDispatch();
@@ -134,7 +142,6 @@ const HistoryPage = () => {
                 </div>
               </div>
             )}
-
             {!loading && history?.length > 0 && (
               <div className=" md:fixed md:block  text-2xl cursor-pointer  md:right-14  md:top-36  ">
                 <Button
@@ -147,6 +154,9 @@ const HistoryPage = () => {
                 </Button>
               </div>
             )}
+            <Center>
+              <Heading fontSize={"xl"}>Watch History</Heading>
+            </Center>
             {!loading &&
               history?.map((video) => {
                 let x = parseInt(
@@ -189,8 +199,54 @@ const HistoryPage = () => {
                                 {video.videoId?.title}
                               </Text>
                             </div>
-                            <div className=" ml-auto md:text-xl  cursor-pointer  hover:text-blue-700 ">
-                              <BsThreeDotsVertical />
+                            <div
+                              className=" ml-auto md:text-xl  cursor-pointer  hover:text-blue-700  "
+                              onClick={(e) => {
+                                e.preventDefault();
+                              }}
+                            >
+                              <Popover isLazy placement="bottom-end">
+                                <PopoverTrigger>
+                                  <Button
+                                    variant="unstyled"
+                                    sx={{ all: "unset" }}
+                                  >
+                                    <BsThreeDotsVertical />
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  width=""
+                                  color="white"
+                                  bgColor={"gray.600"}
+                                >
+                                  <Center>
+                                    {" "}
+                                    <PopoverBody>
+                                      {" "}
+                                      <div className="flex flex-col gap-1 justify-center  text-sm">
+                                        <AddToWatchLater
+                                          id={video.videoId?._id}
+                                        >
+                                          <Flex
+                                            alignItems="center"
+                                            gap={2}
+                                            className="hover:text-blue-400"
+                                          >
+                                            <span className="">
+                                              <FaRegClock />
+                                            </span>
+                                            <span className="">
+                                              {" "}
+                                              Save to Watch Later
+                                            </span>
+                                          </Flex>
+                                        </AddToWatchLater>
+                                      </div>
+                                    </PopoverBody>
+                                  </Center>
+                                </PopoverContent>
+                              </Popover>
+                              {/* <BsThreeDotsVertical /> */}
                             </div>
                           </div>
                           <div className="md:flex ">

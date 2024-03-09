@@ -1,4 +1,16 @@
-import { Avatar, Tooltip, WrapItem, useToast } from "@chakra-ui/react";
+import {
+  Avatar,
+  Button,
+  Center,
+  Flex,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Tooltip,
+  WrapItem,
+  useToast,
+} from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
@@ -6,10 +18,56 @@ import getTime from "format-duration";
 import aveta from "aveta";
 import { format } from "timeago.js";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { FaRegClock } from "react-icons/fa";
+import { addWatchLater } from "../../State/Watchlater/watchLaterAction";
+import AddToWatchLater from "./AddToWatchLater";
 
 const RelatedVideo = ({ tags, token, videoId }) => {
   const [videos, setVideos] = useState(null);
   const toast = useToast();
+  const { data: watchLater } = useSelector((state) => state.watchLater);
+  const userData = useSelector((state) => state.user.data);
+  const dispatch = useDispatch();
+
+  const addToWatchLater = (id) => {
+    try {
+      const exist = watchLater?.some((obj) => {
+        return obj._id == id;
+      });
+
+      if (exist) {
+        toast({
+          title: "Already added to Watch Later.",
+          //  description: "We've created your account for you.",
+          status: "info",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom-left",
+        });
+        return;
+      }
+      dispatch(addWatchLater(userData, id, {}));
+      toast({
+        title: "Add to Watch Later.",
+        //  description: "We've created your account for you.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+    } catch (error) {
+      toast({
+        title: "Could not add to Watch Later.",
+        //  description: "We've created your account for you.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+    }
+  };
+
   const fetchRelatedVideos = async () => {
     try {
       const tag = tags?.join();
@@ -112,10 +170,47 @@ const RelatedVideo = ({ tags, token, videoId }) => {
                           </div>
                         </div>
                       </div>
-                      <div className="   ml-auto">
-                        <span className="  hover:text-blue-700  ">
-                          <BsThreeDotsVertical />
-                        </span>
+                      <div
+                        className="   ml-auto"
+                        onClick={(e) => {
+                          e.preventDefault();
+                        }}
+                      >
+                        <Popover isLazy placement="bottom-end">
+                          <PopoverTrigger>
+                            <Button variant="unstyled" sx={{ all: "unset" }}>
+                              <span className="  hover:text-blue-700  ">
+                                <BsThreeDotsVertical />
+                              </span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            width=""
+                            color="white"
+                            bgColor={"gray.600"}
+                          >
+                            <Center>
+                              {" "}
+                              <PopoverBody>
+                                {" "}
+                                <div className="flex flex-col gap-1 justify-center hover:text-blue-400 text-sm ">
+                                  {" "}
+                                  <AddToWatchLater id={video._id}>
+                                    <Flex alignItems="center" gap={2}>
+                                      <span className="">
+                                        <FaRegClock />
+                                      </span>
+                                      <span className="">
+                                        {" "}
+                                        Save to Watch Later
+                                      </span>
+                                    </Flex>
+                                  </AddToWatchLater>
+                                </div>
+                              </PopoverBody>
+                            </Center>
+                          </PopoverContent>
+                        </Popover>
                       </div>
                     </div>
                   </div>
@@ -123,7 +218,7 @@ const RelatedVideo = ({ tags, token, videoId }) => {
               </div>
             );
         })}
-    
+
       {videos?.length == 1 && (
         <div className="text-center ">No related Videos </div>
       )}

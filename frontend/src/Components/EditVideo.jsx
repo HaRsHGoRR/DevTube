@@ -198,6 +198,14 @@ const EditVideo = ({ isOpen, onClose, onOpen, video, setEditVideo }) => {
       });
       //   navigate("/yourvideos");
     } catch (error) {
+      toast({
+        title: "Could  not update Video.",
+        // description: "We've created your account for you.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+      });
       setLoading(false);
     }
     setLoading(false);

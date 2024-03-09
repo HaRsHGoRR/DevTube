@@ -578,6 +578,11 @@ const addWatchLater = asyncHandler(async (req, res) => {
         { new: true }
       ).populate({
         path: "watchLater",
+          populate: {
+          path: "userId",
+          model:"DevTubeUser",
+          select: "name ",
+        },
       });
 
       if (user) {
@@ -608,7 +613,11 @@ const updateWatchLater = asyncHandler(async (req, res) => {
         $pull: { watchLater: videoId },
       },
       { new: true }
-    ).populate({ path: "watchLater" });
+    ).populate({ path: "watchLater",  populate: {
+          path: "userId",
+          model:"DevTubeUser",
+          select: "name ",
+        }, });
 
     if (user) {
       res.status(200).json(user.watchLater);
@@ -624,7 +633,14 @@ const fetchWatchLater = asyncHandler(async (req, res) => {
     const userId = req.user._id;
     const wacthLaterVideos = await DevTubeUser.findById(userId).populate({
       path: "watchLater",
+      populate: {
+          path: "userId",
+          model:"DevTubeUser",
+          select: "name ",
+        },
     });
+
+
 
     res.status(200).json(wacthLaterVideos.watchLater);
   } catch (error) {

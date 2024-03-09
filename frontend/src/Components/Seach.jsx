@@ -54,18 +54,17 @@ const Seach = ({ isOpen, onClose, onOpen }) => {
 
   useEffect(() => {}, []);
 
-  const handleSearch = async () => {
+  const handleSearch = async (a) => {
     try {
       const config = {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.get(`/api/video/search?q=${search}`, config);
+      const { data } = await axios.get(`/api/video/search?q=${a}`, config);
       setResult(data);
-      //   console.log(data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast({
         title: "Can not search video.",
         //   description: "We've created your account for you.",
@@ -116,8 +115,7 @@ const Seach = ({ isOpen, onClose, onOpen }) => {
                   if (e.target.value.length == 0) {
                     setResult(null);
                   } else {
-                    setSearch(e.target.value);
-                    handleSearch();
+                    handleSearch(e.target.value);
                   }
                 }}
                 spellCheck={false}
@@ -162,6 +160,9 @@ const Seach = ({ isOpen, onClose, onOpen }) => {
                 })}
               </Box>
             )}
+            <Center>
+              {result?.length == 0 && <Text>No video found</Text>}
+            </Center>
           </ModalBody>
         </ModalContent>
       </Modal>

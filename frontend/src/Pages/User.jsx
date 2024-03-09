@@ -13,10 +13,18 @@ import {
   Text,
   useToast,
   Spinner,
+  Popover,
+  PopoverTrigger,
+  Button,
+  PopoverContent,
+  PopoverBody,
+  Flex,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { BiSolidBell } from "react-icons/bi";
 import LandingPage from "./FromNavbar/LandingPage";
+import AddToWatchLater from "../Components/AddToWatchLater";
+import { FaRegClock } from "react-icons/fa";
 
 const User = () => {
   const location = useLocation();
@@ -213,8 +221,50 @@ const User = () => {
                                     </Text>
                                   </div>
                                 </div>
-                                <div className="w-[2px] ml-auto shrink-0 text-blue-500">
-                                  <BsThreeDotsVertical />
+                                <div
+                                  className="w-[2px] ml-auto shrink-0  hover:text-blue-700"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                  }}
+                                >
+                                  <Popover isLazy placement="bottom-end">
+                                    <PopoverTrigger>
+                                      <Button
+                                        variant="unstyled"
+                                        sx={{ all: "unset" }}
+                                      >
+                                        <span className="  hover:text-blue-700  ">
+                                          <BsThreeDotsVertical />
+                                        </span>
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                      width=""
+                                      color="white"
+                                      bgColor={"gray.600"}
+                                    >
+                                      <Center>
+                                        {" "}
+                                        <PopoverBody>
+                                          {" "}
+                                          <div className="flex flex-col gap-1 justify-center hover:text-blue-400 text-sm ">
+                                            {" "}
+                                            <AddToWatchLater id={video._id}>
+                                              <Flex alignItems="center" gap={2}>
+                                                <span className="">
+                                                  <FaRegClock />
+                                                </span>
+                                                <span className="">
+                                                  {" "}
+                                                  Save to Watch Later
+                                                </span>
+                                              </Flex>
+                                            </AddToWatchLater>
+                                          </div>
+                                        </PopoverBody>
+                                      </Center>
+                                    </PopoverContent>
+                                  </Popover>
                                 </div>
                               </div>
                             </div>

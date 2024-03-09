@@ -30,6 +30,7 @@ import { fetchUser } from "../../State/User/userAction";
 import axios from "axios";
 import { fetchHistory } from "../../State/History/historyAction";
 import { fetchVideos } from "../../State/Videos/videosAction";
+import { fetchWatchLater } from "../../State/Watchlater/watchLaterAction";
 
 export default function RegLog({ isOpen, onOpen, onClose }) {
   const toast = useToast();
@@ -53,6 +54,7 @@ export default function RegLog({ isOpen, onOpen, onClose }) {
           await dispatch(fetchUser(data));
           await dispatch(fetchHistory(data));
           await dispatch(fetchVideos(data));
+          await dispatch(fetchWatchLater(data));
 
           toast({
             title: "Success.",

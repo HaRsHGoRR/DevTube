@@ -17,6 +17,7 @@ import {
   AlertIcon,
   AlertTitle,
   useDisclosure,
+  Heading,
 } from "@chakra-ui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import aveta from "aveta";
@@ -26,6 +27,8 @@ import { deleteVideo, fetchVideos } from "../../../State/Videos/videosAction";
 import getTime from "format-duration";
 import LandingPage from "../FromNavbar/LandingPage";
 import EditVideo from "../../Components/EditVideo";
+import AddToWatchLater from "../../Components/AddToWatchLater";
+import { FaRegClock } from "react-icons/fa";
 
 const YourVideos = () => {
   const { data: videos, loading, error } = useSelector((state) => state.videos);
@@ -155,6 +158,9 @@ const YourVideos = () => {
               </div>
             </div>
           )}
+          <Center>
+            <Heading fontSize={"xl"}>Your Videos</Heading>
+          </Center>
           {!loading && videos?.length == 0 && (
             <span className="mx-auto">No videos found.</span>
           )}
@@ -248,6 +254,12 @@ const YourVideos = () => {
                                           <MdDelete />
                                         </span>
                                       </Flex>
+                                      <hr />
+                                      <AddToWatchLater id={video._id}>
+                                        <span className="hover:text-blue-400">
+                                          <FaRegClock />
+                                        </span>
+                                      </AddToWatchLater>
                                     </div>
                                   </PopoverBody>
                                 </Center>

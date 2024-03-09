@@ -19,7 +19,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { GoDownload } from "react-icons/go";
-import { MdOutlinePlaylistAdd } from "react-icons/md";
+import { MdBlock, MdOutlinePlaylistAdd } from "react-icons/md";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import VideoPlayer from "./VideoPlayer";
 import axios from "axios";
@@ -31,7 +31,7 @@ import moment from "moment";
 import { format as getTime } from "timeago.js";
 import aveta from "aveta";
 import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
-import { FaShareSquare } from "react-icons/fa";
+import { FaRegClock, FaShare, FaShareSquare } from "react-icons/fa";
 import {
   Popover,
   PopoverTrigger,
@@ -45,12 +45,17 @@ import {
 } from "@chakra-ui/react";
 import { fetchHistory } from "../../State/History/historyAction";
 import LandingPage from "../Pages/FromNavbar/LandingPage";
+import { addWatchLater } from "../../State/Watchlater/watchLaterAction";
+import { IoMdDownload } from "react-icons/io";
+import AddToWatchLater from "./AddToWatchLater";
 
 const Video = () => {
   const userData = useSelector((state) => state.user);
+
   const dispatch = useDispatch();
   const [loaing, setLoading] = useState(false);
   const [desc, setDesc] = useState(false);
+
   const { token, _id } = useSelector((state) => state.user.data) || {
     token: null,
   };
@@ -65,6 +70,7 @@ const Video = () => {
   const [subscribers, setSubscribers] = useState(0);
   const [liked, setLiked] = useState(false);
   const [disLiked, setdisLiked] = useState(false);
+  const { data: watchLater } = useSelector((state) => state.watchLater);
 
   const [likes, setLikes] = useState(0);
   const [disLikes, setdisLikes] = useState(0);
@@ -547,16 +553,18 @@ const Video = () => {
                                       </a>
                                     </Text>
                                   </Button>
-                                  <Button
-                                    borderRadius="20px"
-                                    size="sm"
-                                    color={"blue.700"}
-                                    variant="outline"
-                                  >
-                                    <MdOutlinePlaylistAdd />
-                                    &nbsp;
-                                    <Text fontSize={"xs"}>Save</Text>
-                                  </Button>
+                                  <AddToWatchLater id={id}>
+                                    <Button
+                                      borderRadius="20px"
+                                      size="sm"
+                                      color={"blue.700"}
+                                      variant="outline"
+                                    >
+                                      <MdOutlinePlaylistAdd />
+                                      &nbsp;
+                                      <Text fontSize={"xs"}>Save</Text>
+                                    </Button>
+                                  </AddToWatchLater>
                                 </>
                               ) : (
                                 <>
@@ -586,7 +594,13 @@ const Video = () => {
                                               cursor={"pointer"}
                                               fontSize="md"
                                               _hover={{ color: "blue.500" }}
+                                              display="flex"
+                                              alignItems="center"
+                                              gap={2}
                                             >
+                                              <span>
+                                                <FaShare />
+                                              </span>
                                               <a
                                                 href={`whatsapp://send?text=${window.location.href}`}
                                                 data-action="share/whatsapp/share"
@@ -599,22 +613,37 @@ const Video = () => {
                                               cursor={"pointer"}
                                               fontSize="md"
                                               _hover={{ color: "blue.500" }}
+                                              display="flex"
+                                              alignItems="center"
+                                              gap={2}
                                             >
+                                              <span>
+                                                <IoMdDownload />
+                                              </span>
                                               <a
                                                 href={videodetails.videoUrl}
                                                 download
                                               >
-                                                Download
+                                                {" "}
+                                                <span>Download</span>
                                               </a>
                                             </Text>
                                             <hr />
-                                            <Text
-                                              cursor={"pointer"}
-                                              fontSize="md"
-                                              _hover={{ color: "blue.500" }}
-                                            >
-                                              Save
-                                            </Text>
+                                            <AddToWatchLater id={id}>
+                                              <Text
+                                                cursor={"pointer"}
+                                                fontSize="md"
+                                                _hover={{ color: "blue.500" }}
+                                                display="flex"
+                                                alignItems="center"
+                                                gap={2}
+                                              >
+                                                <span>
+                                                  <FaRegClock />
+                                                </span>
+                                                <span>Save</span>
+                                              </Text>
+                                            </AddToWatchLater>
                                           </div>
                                         </PopoverBody>
                                       </Center>

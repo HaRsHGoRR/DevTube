@@ -21,6 +21,7 @@ import { fetchUser } from "../../State/User/userAction";
 import OtpModal from "./OtpModal";
 import { fetchHistory } from "../../State/History/historyAction";
 import { fetchVideos } from "../../State/Videos/videosAction";
+import { fetchWatchLater } from "../../State/Watchlater/watchLaterAction";
 const Signup = ({ onClose }) => {
   const [name, setName] = useState();
   const [email, setEmail] = useState();
@@ -103,31 +104,31 @@ const Signup = ({ onClose }) => {
     setShow(!show);
   };
 
-  const sendOtp =async (email) => {
-    setLoading(true)
-     if (!password || !email || !name || !confirmpassword) {
-       toast({
-         title: "Please enter required fields",
-         status: "warning",
-         duration: 2000,
-         isClosable: true,
-         position: "bottom-left",
-       });
-       setLoading(false);
-       return;
-     }
+  const sendOtp = async (email) => {
+    setLoading(true);
+    if (!password || !email || !name || !confirmpassword) {
+      toast({
+        title: "Please enter required fields",
+        status: "warning",
+        duration: 2000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+      setLoading(false);
+      return;
+    }
 
-     if (password !== confirmpassword) {
-       toast({
-         title: "Password and Confirm Password shoud be same",
-         status: "warning",
-         duration: 2000,
-         isClosable: true,
-         position: "bottom-left",
-       });
-       setLoading(false);
-       return;
-     }
+    if (password !== confirmpassword) {
+      toast({
+        title: "Password and Confirm Password shoud be same",
+        status: "warning",
+        duration: 2000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+      setLoading(false);
+      return;
+    }
     try {
       const config = {
         headers: {
@@ -150,7 +151,7 @@ const Signup = ({ onClose }) => {
     } catch (error) {
       toast({
         title: "Could not send OTP",
-        description:error.response.data.message,
+        description: error.response.data.message,
         status: "error",
         duration: 2000,
         isClosable: true,
@@ -158,12 +159,10 @@ const Signup = ({ onClose }) => {
       });
     }
     setLoading(false);
-
   };
 
   const submitHandler = async () => {
     setLoading(true);
-   
 
     try {
       const config = {
@@ -185,9 +184,10 @@ const Signup = ({ onClose }) => {
 
       localStorage.setItem("userInfo", JSON.stringify(data));
       await dispatch(fetchUser(data));
-       await dispatch(fetchHistory(data));
-       await dispatch(fetchVideos(data));
-      
+      await dispatch(fetchHistory(data));
+      await dispatch(fetchVideos(data));
+      await dispatch(fetchWatchLater(data));
+
       setLoading(false);
       onClose();
       toast({

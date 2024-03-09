@@ -1,27 +1,42 @@
 import {
   Avatar,
+  Button,
   Center,
+  Flex,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Spinner,
   Tooltip,
   WrapItem,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { format } from "timeago.js";
 import getTime from "format-duration";
 import { GoDotFill } from "react-icons/go";
 import { NavLink, useNavigate } from "react-router-dom";
 import aveta from "aveta";
+import { MdDelete } from "react-icons/md";
+import { FaRegClock } from "react-icons/fa";
+import { addWatchLater } from "../../State/Watchlater/watchLaterAction";
+import AddToWatchLater from "./AddToWatchLater";
 
 export const ShowVideos = ({ type }) => {
   const toast = useToast();
   const { token } = useSelector((state) => state.user.data) || { token: null };
+  const { data } = useSelector((state) => state.user);
+  const { data: watchLater } = useSelector((state) => state.watchLater);
+
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispath = useDispatch();
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -55,6 +70,8 @@ export const ShowVideos = ({ type }) => {
     };
     fetchVideos();
   }, [token]);
+
+  
   return (
     <>
       <></>
@@ -136,19 +153,56 @@ export const ShowVideos = ({ type }) => {
                                   })}{" "}
                                   Views
                                 </div>
-                               
+
                                 <div className="">
-                                  <span class="font-extrabold"> &middot;  </span>
+                                  <span class="font-extrabold"> &middot; </span>
                                   {format(video.createdAt)}
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="   ml-auto">
-                          <span className=" ">
-                            <BsThreeDotsVertical />
-                          </span>
+                        <div
+                          className="   ml-auto hover:text-blue-700"
+                          onClick={(e) => {
+                            e.preventDefault();
+
+                            // console.log("hii");
+                          }}
+                        >
+                          <Popover isLazy placement="bottom-end">
+                            <PopoverTrigger>
+                              <Button variant="unstyled" sx={{ all: "unset" }}>
+                                <BsThreeDotsVertical />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              width=""
+                              color="white"
+                              bgColor={"gray.600"}
+                            >
+                              <Center>
+                                {" "}
+                                <PopoverBody>
+                                  {" "}
+                                  <div className="flex flex-col gap-1 justify-center hover:text-blue-400 ">
+                                    <AddToWatchLater id={video._id}>
+                                      <Flex alignItems="center" gap={2}>
+                                        <span className="">
+                                          <FaRegClock />
+                                        </span>
+                                        <span className="">
+                                          {" "}
+                                          Save to Watch Later
+                                        </span>
+                                      </Flex>
+                                    </AddToWatchLater>
+                                  </div>
+                                </PopoverBody>
+                              </Center>
+                            </PopoverContent>
+                          </Popover>
+                          
                         </div>
                       </div>
                     </div>

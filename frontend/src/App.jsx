@@ -20,37 +20,38 @@ import { useDispatch, useSelector } from "react-redux";
 import User from "./Pages/User";
 import Error from "./Pages/Error";
 import Video from "./Components/Video";
-import '@fortawesome/fontawesome-free/css/all.css';
+import "@fortawesome/fontawesome-free/css/all.css";
 import { fetchVideos } from "../State/Videos/videosAction";
-
+import { fetchWatchLater } from "../State/Watchlater/watchLaterAction";
 
 function App() {
   const [showSide, setShowSide] = useState(false);
   const dispatch = useDispatch();
   const { data } = useSelector((state) => state.user);
 
+  const showSidebar = () => {
+    setShowSide(!showSide);
+    document.body.classList.toggle("no-scroll", showSide);
+  };
   useEffect(() => {
     initFlowbite();
   }, []);
 
   useEffect(() => {
+    // console.log(data);
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const fetchData = async () => {
       await dispatch(fetchUser(userInfo));
       await dispatch(fetchHistory(userInfo));
-      await  dispatch(fetchVideos(userInfo));
+      await dispatch(fetchVideos(userInfo));
+      await dispatch(fetchWatchLater(userInfo));
     };
 
     if (!userInfo) {
     } else {
       fetchData();
     }
-  }, [fetchUser]);
-
-  const showSidebar = () => {
-    setShowSide(!showSide);
-    document.body.classList.toggle("no-scroll", showSide);
-  };
+  }, []);
 
   return (
     <BrowserRouter>
