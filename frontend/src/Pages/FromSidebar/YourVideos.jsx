@@ -29,6 +29,8 @@ import LandingPage from "../FromNavbar/LandingPage";
 import EditVideo from "../../Components/EditVideo";
 import AddToWatchLater from "../../Components/AddToWatchLater";
 import { FaRegClock } from "react-icons/fa";
+import VideoDownloader from "../../Components/VideoDownloader";
+import { IoMdDownload } from "react-icons/io";
 
 const YourVideos = () => {
   const { data: videos, loading, error } = useSelector((state) => state.videos);
@@ -255,11 +257,27 @@ const YourVideos = () => {
                                         </span>
                                       </Flex>
                                       <hr />
-                                      <AddToWatchLater id={video._id}>
+                                      <AddToWatchLater id={video?._id}>
                                         <span className="hover:text-blue-400">
                                           <FaRegClock />
                                         </span>
                                       </AddToWatchLater>
+                                      <hr />
+                                      <Flex
+                                        alignItems="center"
+                                        gap={2}
+                                        className="hover:text-blue-400"
+                                      >
+                                        <VideoDownloader
+                                          videoUrl={video?.videoUrl}
+                                          videoName={video?.title}
+                                        >
+                                          {" "}
+                                          <span className=" hover:text-blue-400">
+                                            <IoMdDownload />
+                                          </span>
+                                        </VideoDownloader>
+                                      </Flex>
                                     </div>
                                   </PopoverBody>
                                 </Center>

@@ -35,6 +35,8 @@ import {
 } from "../../../State/Watchlater/watchLaterAction";
 import { FaRegClock } from "react-icons/fa";
 import AddToWatchLater from "../../Components/AddToWatchLater";
+import VideoDownloader from "../../Components/VideoDownloader";
+import { IoMdDownload } from "react-icons/io";
 
 const WatchLaterPage = () => {
   const {
@@ -248,9 +250,10 @@ const WatchLaterPage = () => {
                                   {" "}
                                   <PopoverBody>
                                     {" "}
-                                    <div className="flex flex-col gap-1 justify-center  hover:text-red-400">
+                                    <div className="flex flex-col gap-1 justify-center  ">
                                       {" "}
                                       <Flex
+                                        className="hover:text-red-400"
                                         alignItems="center"
                                         gap={2}
                                         onClick={() => {
@@ -264,6 +267,25 @@ const WatchLaterPage = () => {
                                           {" "}
                                           Remove from Watch Later
                                         </span>
+                                      </Flex>
+                                      <hr />
+                                      <Flex
+                                        alignItems="center"
+                                        gap={2}
+                                        className="hover:text-blue-400"
+                                      >
+                                        <VideoDownloader
+                                          videoUrl={video?.videoUrl}
+                                          videoName={video?.title}
+                                        >
+                                          {" "}
+                                          <span className="flex justify-center items-center gap-2 text-sm">
+                                            <span className="text-lg">
+                                              <IoMdDownload />
+                                            </span>
+                                            <span className=""> Download</span>
+                                          </span>
+                                        </VideoDownloader>
                                       </Flex>
                                     </div>
                                   </PopoverBody>

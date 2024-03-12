@@ -48,6 +48,8 @@ import LandingPage from "../Pages/FromNavbar/LandingPage";
 import { addWatchLater } from "../../State/Watchlater/watchLaterAction";
 import { IoMdDownload } from "react-icons/io";
 import AddToWatchLater from "./AddToWatchLater";
+import VideoDownloader from "./VideoDownloader";
+import DownloadHandler from "./DownloadHandler";
 
 const Video = () => {
   const userData = useSelector((state) => state.user);
@@ -519,6 +521,7 @@ const Video = () => {
                                   icon={<AiOutlineDislike />}
                                 />
                               </ButtonGroup>
+
                               {mobile ? (
                                 <>
                                   {" "}
@@ -539,20 +542,21 @@ const Video = () => {
                                       </a>
                                     </Text>
                                   </Button>
-                                  <Button
-                                    borderRadius="20px"
-                                    size="sm"
-                                    color={"blue.700"}
-                                    variant="outline"
+                                  <VideoDownloader
+                                    videoUrl={videodetails?.videoUrl}
+                                    videoName={videodetails?.title}
                                   >
-                                    <GoDownload />
-                                    &nbsp;
-                                    <Text fontSize={"xs"}>
-                                      <a href={videodetails.videoUrl} download>
-                                        Download
-                                      </a>
-                                    </Text>
-                                  </Button>
+                                    <Button
+                                      borderRadius="20px"
+                                      size="sm"
+                                      color={"blue.700"}
+                                      variant="outline"
+                                    >
+                                      <GoDownload />
+                                      &nbsp;
+                                      <Text fontSize={"xs"}>Download</Text>
+                                    </Button>
+                                  </VideoDownloader>
                                   <AddToWatchLater id={id}>
                                     <Button
                                       borderRadius="20px"
@@ -593,7 +597,7 @@ const Video = () => {
                                             <Text
                                               cursor={"pointer"}
                                               fontSize="md"
-                                              _hover={{ color: "blue.500" }}
+                                              _hover={{ color: "blue" }}
                                               display="flex"
                                               alignItems="center"
                                               gap={2}
@@ -609,31 +613,30 @@ const Video = () => {
                                               </a>
                                             </Text>
                                             <hr />
-                                            <Text
-                                              cursor={"pointer"}
-                                              fontSize="md"
-                                              _hover={{ color: "blue.500" }}
-                                              display="flex"
-                                              alignItems="center"
-                                              gap={2}
+                                            <VideoDownloader
+                                              videoUrl={videodetails?.videoUrl}
+                                              videoName={videodetails?.title}
                                             >
-                                              <span>
-                                                <IoMdDownload />
-                                              </span>
-                                              <a
-                                                href={videodetails.videoUrl}
-                                                download
+                                              <Text
+                                                cursor={"pointer"}
+                                                fontSize="md"
+                                                _hover={{ color: "blue" }}
+                                                display="flex"
+                                                alignItems="center"
+                                                gap={2}
                                               >
-                                                {" "}
+                                                <span>
+                                                  <IoMdDownload />
+                                                </span>{" "}
                                                 <span>Download</span>
-                                              </a>
-                                            </Text>
+                                              </Text>
+                                            </VideoDownloader>
                                             <hr />
                                             <AddToWatchLater id={id}>
                                               <Text
                                                 cursor={"pointer"}
                                                 fontSize="md"
-                                                _hover={{ color: "blue.500" }}
+                                                _hover={{ color: "blue" }}
                                                 display="flex"
                                                 alignItems="center"
                                                 gap={2}

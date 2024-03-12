@@ -26,6 +26,9 @@ import { MdDelete } from "react-icons/md";
 import { FaRegClock } from "react-icons/fa";
 import { addWatchLater } from "../../State/Watchlater/watchLaterAction";
 import AddToWatchLater from "./AddToWatchLater";
+import DownloadVideo from "./DownloadVideo";
+import { IoMdDownload } from "react-icons/io";
+import VideoDownloader from "./VideoDownloader";
 
 export const ShowVideos = ({ type }) => {
   const toast = useToast();
@@ -71,7 +74,6 @@ export const ShowVideos = ({ type }) => {
     fetchVideos();
   }, [token]);
 
-  
   return (
     <>
       <></>
@@ -185,9 +187,13 @@ export const ShowVideos = ({ type }) => {
                                 {" "}
                                 <PopoverBody>
                                   {" "}
-                                  <div className="flex flex-col gap-1 justify-center hover:text-blue-400 ">
+                                  <div className="flex flex-col gap-1 justify-center  ">
                                     <AddToWatchLater id={video._id}>
-                                      <Flex alignItems="center" gap={2}>
+                                      <Flex
+                                        alignItems="center"
+                                        gap={2}
+                                        className="hover:text-blue-400"
+                                      >
                                         <span className="">
                                           <FaRegClock />
                                         </span>
@@ -197,12 +203,31 @@ export const ShowVideos = ({ type }) => {
                                         </span>
                                       </Flex>
                                     </AddToWatchLater>
+                                    <hr />
+
+                                    <Flex
+                                      alignItems="center"
+                                      gap={2}
+                                      className="hover:text-blue-400"
+                                    >
+                                      <VideoDownloader
+                                        videoUrl={video?.videoUrl}
+                                        videoName={video?.title}
+                                      >
+                                        {" "}
+                                        <span className="flex justify-center items-center gap-2">
+                                          <span className="">
+                                            <IoMdDownload />
+                                          </span>
+                                          <span className=""> Download</span>
+                                        </span>
+                                      </VideoDownloader>
+                                    </Flex>
                                   </div>
                                 </PopoverBody>
                               </Center>
                             </PopoverContent>
                           </Popover>
-                          
                         </div>
                       </div>
                     </div>

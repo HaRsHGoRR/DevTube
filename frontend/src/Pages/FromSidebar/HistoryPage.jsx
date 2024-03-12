@@ -28,6 +28,8 @@ import {
 import LandingPage from "../FromNavbar/LandingPage";
 import AddToWatchLater from "../../Components/AddToWatchLater";
 import { FaRegClock } from "react-icons/fa";
+import VideoDownloader from "../../Components/VideoDownloader";
+import { IoMdDownload } from "react-icons/io";
 
 const HistoryPage = () => {
   const dispatch = useDispatch();
@@ -225,7 +227,7 @@ const HistoryPage = () => {
                                       {" "}
                                       <div className="flex flex-col gap-1 justify-center  text-sm">
                                         <AddToWatchLater
-                                          id={video.videoId?._id}
+                                          id={video?.videoId?._id}
                                         >
                                           <Flex
                                             alignItems="center"
@@ -241,6 +243,28 @@ const HistoryPage = () => {
                                             </span>
                                           </Flex>
                                         </AddToWatchLater>
+                                        <hr />
+                                        <Flex
+                                          alignItems="center"
+                                          gap={2}
+                                          className="hover:text-blue-400"
+                                        >
+                                          <VideoDownloader
+                                            videoUrl={video?.videoId?.videoUrl}
+                                            videoName={video?.videoId?.title}
+                                          >
+                                            {" "}
+                                            <span className="flex justify-center items-center gap-2">
+                                              <span className="">
+                                                <IoMdDownload />
+                                              </span>
+                                              <span className="">
+                                                {" "}
+                                                Download
+                                              </span>
+                                            </span>
+                                          </VideoDownloader>
+                                        </Flex>
                                       </div>
                                     </PopoverBody>
                                   </Center>
