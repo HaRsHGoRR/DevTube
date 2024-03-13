@@ -24,6 +24,7 @@ import { SendToBack } from "lucide-react";
 import { fetchHistory } from "../../State/History/historyAction";
 import { fetchVideos } from "../../State/Videos/videosAction";
 import { fetchWatchLater } from "../../State/Watchlater/watchLaterAction";
+import { fetchPlaylists } from "../../State/Playlist/playlistAction";
 
 const Login = ({ onClose }) => {
   const [email, setEmail] = useState();
@@ -86,6 +87,8 @@ const Login = ({ onClose }) => {
       await dispatch(fetchHistory(data));
       await dispatch(fetchVideos(data));
       await dispatch(fetchWatchLater(data));
+      await dispatch(fetchPlaylists(data));
+
 
       setLoading(false);
       onClose();

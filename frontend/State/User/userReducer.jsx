@@ -8,7 +8,7 @@ import {
 const initialState = {
   data: null,
   loading: false,
-  error: "",
+  error: null,
 };
 
 const reducer = (state = initialState, action) => {

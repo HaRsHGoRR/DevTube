@@ -22,6 +22,7 @@ import OtpModal from "./OtpModal";
 import { fetchHistory } from "../../State/History/historyAction";
 import { fetchVideos } from "../../State/Videos/videosAction";
 import { fetchWatchLater } from "../../State/Watchlater/watchLaterAction";
+import { fetchPlaylists } from "../../State/Playlist/playlistAction";
 const Signup = ({ onClose }) => {
   const [name, setName] = useState();
   const [email, setEmail] = useState();
@@ -187,6 +188,9 @@ const Signup = ({ onClose }) => {
       await dispatch(fetchHistory(data));
       await dispatch(fetchVideos(data));
       await dispatch(fetchWatchLater(data));
+      await dispatch(fetchPlaylists(data));
+
+
 
       setLoading(false);
       onClose();

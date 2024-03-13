@@ -48,6 +48,7 @@ const VideoDownloader = ({ videoUrl, videoName, children }) => {
           })
           .catch((error) => {
             reject("Error occurred while downloading video.");
+            setLoading(false);
           });
       });
 

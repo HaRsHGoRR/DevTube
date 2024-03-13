@@ -27,7 +27,7 @@ const PlaylistSchema = new mongoose.Schema({
       },
     },
   ],
-});
+},  { timestamps: true });
 
 const DevTubeUserPlaylist = mongoose.model(
   "DevTubeUserPlaylist",

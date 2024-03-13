@@ -54,19 +54,55 @@ const deletePlaylist = asyncHandler(async (req, res) => {
   }
 });
 
+// const fetchPlaylists = asyncHandler(async (req, res) => {
+//   const userId = req.user._id;
+
+//   try {
+//     const playlists = await DevTubeUserPlaylist.find({ userId }).populate(
+//      {
+//         path: 'videos.videoId',
+//         options: { sort: { timeAdded: -1 } } // Sort videos by timeAdded field in descending order
+//       }
+//     ).sort({ updatedAt: -1 }); 
+//     res.status(200).json(playlists);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(404);
+//     throw new Error("Can not load Playlists.");
+//   }
+// });
+
 const fetchPlaylists = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
   try {
-    const playlists = await DevTubeUserPlaylist.find({ userId }).populate(
-      "videos.videoId"
-    );
-    res.status(200).json(playlists);
+    // Fetch playlists without populating videos
+    const playlists = await DevTubeUserPlaylist.find({ userId }).sort({ updatedAt: -1 });
+
+    // Populate videos for each playlist
+    const populatedPlaylists = await Promise.all(playlists.map(async (playlist) => {
+      const populatedVideos = await DevTubeUserPlaylist.populate(playlist, {
+        path: 'videos.videoId',
+         populate: {
+          path: "userId",
+          model:"DevTubeUser",
+          select: "name ",
+        },
+      });
+      
+      // Sort videos for each playlist by timeAdded
+      populatedVideos.videos.sort((a, b) => b.timeAdded - a.timeAdded);
+      
+      return populatedVideos;
+    }));
+
+    res.status(200).json(populatedPlaylists);
   } catch (error) {
     res.status(404);
     throw new Error("Can not load Playlists.");
   }
 });
+
 
 const updatePlaylist = asyncHandler(async (req, res) => {
   const playListId = req.params.id;
@@ -89,6 +125,10 @@ const updatePlaylist = asyncHandler(async (req, res) => {
   }
 });
 
+
+
+
+// with sorting of videos 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
   const playlistId = req.params.id;
   const { videoId } = req.body;
@@ -103,7 +143,8 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     );
 
     if (!isVideoAlreadyAdded) {
-      playlist.videos.push({
+      // Prepend the new video to the videos array
+      playlist.videos.unshift({
         videoId: new mongoose.Types.ObjectId(videoId),
       });
 
@@ -111,6 +152,12 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
       playlists = await DevTubeUserPlaylist.findById(playlistId).populate({
         path: "videos.videoId",
         model: "DevTubeVideo",
+        populate: {
+          path: "userId",
+          model:"DevTubeUser",
+          select: "name ",
+        },
+        
       });
       res.status(200).json(playlists);
     } else {
@@ -121,6 +168,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     throw error;
   }
 });
+
 
 const removeVideoToPlaylist = asyncHandler(async (req, res) => {
   const playlistId = req.params.id;
@@ -140,6 +188,11 @@ const removeVideoToPlaylist = asyncHandler(async (req, res) => {
       playlists = await DevTubeUserPlaylist.findById(playlistId).populate({
         path: "videos.videoId",
         model: "DevTubeVideo",
+        populate: {
+          path: "userId",
+          model:"DevTubeUser",
+          select: "name ",
+        },
       });
       res.status(200).json(playlists);
     }

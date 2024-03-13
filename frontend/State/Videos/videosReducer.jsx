@@ -6,7 +6,7 @@ import {
 } from "./videosTypes";
 
 const initialState = {
-  videos: null,
+  data: null,
   loading: false,
   error: null,
 };

@@ -49,7 +49,6 @@ import { addWatchLater } from "../../State/Watchlater/watchLaterAction";
 import { IoMdDownload } from "react-icons/io";
 import AddToWatchLater from "./AddToWatchLater";
 import VideoDownloader from "./VideoDownloader";
-import DownloadHandler from "./DownloadHandler";
 
 const Video = () => {
   const userData = useSelector((state) => state.user);

@@ -23,6 +23,8 @@ import Video from "./Components/Video";
 import "@fortawesome/fontawesome-free/css/all.css";
 import { fetchVideos } from "../State/Videos/videosAction";
 import { fetchWatchLater } from "../State/Watchlater/watchLaterAction";
+import { fetchPlaylists } from "../State/Playlist/playlistAction";
+
 
 function App() {
   const [showSide, setShowSide] = useState(false);
@@ -45,6 +47,7 @@ function App() {
       await dispatch(fetchHistory(userInfo));
       await dispatch(fetchVideos(userInfo));
       await dispatch(fetchWatchLater(userInfo));
+      await dispatch(fetchPlaylists(userInfo));
     };
 
     if (!userInfo) {

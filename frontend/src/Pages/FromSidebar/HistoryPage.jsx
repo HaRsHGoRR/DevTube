@@ -34,6 +34,8 @@ import { IoMdDownload } from "react-icons/io";
 const HistoryPage = () => {
   const dispatch = useDispatch();
   const { data: history, loading } = useSelector((state) => state.history);
+  const ok = useSelector((state) => state.history);
+
   const { data: user } = useSelector((state) => state.user);
   const toast = useToast();
   useEffect(() => {

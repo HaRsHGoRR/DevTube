@@ -6,7 +6,7 @@ import {
 } from "./historyTypes";
 
 const initialState = {
-  history: null,
+  data: null,
   loading: false,
   error: null,
 };
