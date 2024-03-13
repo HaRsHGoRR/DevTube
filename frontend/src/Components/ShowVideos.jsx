@@ -29,17 +29,20 @@ import AddToWatchLater from "./AddToWatchLater";
 import DownloadVideo from "./DownloadVideo";
 import { IoMdDownload } from "react-icons/io";
 import VideoDownloader from "./VideoDownloader";
+import AddToPlayList from "./AddToPlayList";
+import { CgPlayList } from "react-icons/cg";
 
 export const ShowVideos = ({ type }) => {
   const toast = useToast();
+  const [videoId, setVideoId] = useState(null);
   const { token } = useSelector((state) => state.user.data) || { token: null };
   const { data } = useSelector((state) => state.user);
   const { data: watchLater } = useSelector((state) => state.watchLater);
-
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispath = useDispatch();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -168,8 +171,6 @@ export const ShowVideos = ({ type }) => {
                           className="   ml-auto hover:text-blue-700"
                           onClick={(e) => {
                             e.preventDefault();
-
-                            // console.log("hii");
                           }}
                         >
                           <Popover isLazy placement="bottom-end">
@@ -223,6 +224,26 @@ export const ShowVideos = ({ type }) => {
                                         </span>
                                       </VideoDownloader>
                                     </Flex>
+
+                                    <hr />
+                                    <Flex
+                                      alignItems="center"
+                                      gap={2}
+                                      className="hover:text-blue-400"
+                                      onClick={() => {
+                                        setVideoId(video?._id);
+
+                                        onOpen();
+                                      }}
+                                    >
+                                      <span className="">
+                                        <CgPlayList />
+                                      </span>
+                                      <span className="">
+                                        {" "}
+                                        Save to Playlist
+                                      </span>
+                                    </Flex>
                                   </div>
                                 </PopoverBody>
                               </Center>
@@ -235,6 +256,13 @@ export const ShowVideos = ({ type }) => {
                 );
               })}
           </div>
+          <AddToPlayList
+            videoId={videoId}
+            isOpen={isOpen}
+            onClose={onClose}
+            onOpen={onOpen}
+            user={data}
+          />
         </>
       )}
     </>
