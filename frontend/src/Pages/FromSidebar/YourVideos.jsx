@@ -31,10 +31,13 @@ import AddToWatchLater from "../../Components/AddToWatchLater";
 import { FaRegClock } from "react-icons/fa";
 import VideoDownloader from "../../Components/VideoDownloader";
 import { IoMdDownload } from "react-icons/io";
+import AddToPlayList from "../../Components/AddToPlayList";
+import { CgPlayList } from "react-icons/cg";
 
 const YourVideos = () => {
   const { data: videos, loading, error } = useSelector((state) => state.videos);
   const [editVideo, setEditVideo] = useState(null);
+  const [id, setId] = useState(null);
 
   const dispatch = useDispatch();
   const { data: user } = useSelector((state) => state.user);
@@ -44,6 +47,8 @@ const YourVideos = () => {
     onOpen: onEdit,
     onClose: onEditClose,
   } = useDisclosure();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -278,6 +283,20 @@ const YourVideos = () => {
                                           </span>
                                         </VideoDownloader>
                                       </Flex>
+                                      <hr />
+                                      <Flex
+                                        alignItems="center"
+                                        gap={2}
+                                        className="hover:text-blue-400"
+                                        onClick={() => {
+                                          setId(video?._id);
+                                          onOpen();
+                                        }}
+                                      >
+                                        <span className=" hover:text-blue-400">
+                                          <CgPlayList />
+                                        </span>
+                                      </Flex>
                                     </div>
                                   </PopoverBody>
                                 </Center>
@@ -325,6 +344,13 @@ const YourVideos = () => {
               onClose={onEditClose}
             />
           )}
+          <AddToPlayList
+            videoId={id}
+            isOpen={isOpen}
+            onClose={onClose}
+            onOpen={onOpen}
+            user={user}
+          />
         </div>
       ) : (
         <>

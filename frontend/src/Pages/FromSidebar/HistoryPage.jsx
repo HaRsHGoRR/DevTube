@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MdDelete } from "react-icons/md";
 import {
@@ -14,6 +14,7 @@ import {
   Skeleton,
   Stack,
   Text,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -30,11 +31,15 @@ import AddToWatchLater from "../../Components/AddToWatchLater";
 import { FaRegClock } from "react-icons/fa";
 import VideoDownloader from "../../Components/VideoDownloader";
 import { IoMdDownload } from "react-icons/io";
+import { CgPlayList } from "react-icons/cg";
+import AddToPlayList from "../../Components/AddToPlayList";
 
 const HistoryPage = () => {
   const dispatch = useDispatch();
   const { data: history, loading } = useSelector((state) => state.history);
   const ok = useSelector((state) => state.history);
+  const [videoId, setVideoId] = useState(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { data: user } = useSelector((state) => state.user);
   const toast = useToast();
@@ -267,6 +272,25 @@ const HistoryPage = () => {
                                             </span>
                                           </VideoDownloader>
                                         </Flex>
+                                        <hr />
+                                        <Flex
+                                          alignItems="center"
+                                          gap={2}
+                                          className="hover:text-blue-400"
+                                          onClick={() => {
+                                            setVideoId(video?.videoId?._id);
+
+                                            onOpen();
+                                          }}
+                                        >
+                                          <span className="">
+                                            <CgPlayList />
+                                          </span>
+                                          <span className="">
+                                            {" "}
+                                            Save to Playlist
+                                          </span>
+                                        </Flex>
                                       </div>
                                     </PopoverBody>
                                   </Center>
@@ -325,6 +349,13 @@ const HistoryPage = () => {
               })}
           </>
           {history?.length == 0 && <Center>No history </Center>}
+          <AddToPlayList
+            videoId={videoId}
+            isOpen={isOpen}
+            onClose={onClose}
+            onOpen={onOpen}
+            user={user}
+          />
         </div>
       ) : (
         <>

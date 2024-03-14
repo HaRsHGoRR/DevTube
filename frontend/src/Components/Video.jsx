@@ -14,6 +14,7 @@ import {
   TagLabel,
   Text,
   WrapItem,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
@@ -49,6 +50,8 @@ import { addWatchLater } from "../../State/Watchlater/watchLaterAction";
 import { IoMdDownload } from "react-icons/io";
 import AddToWatchLater from "./AddToWatchLater";
 import VideoDownloader from "./VideoDownloader";
+import { CgPlayList } from "react-icons/cg";
+import AddToPlayList from "./AddToPlayList";
 
 const Video = () => {
   const userData = useSelector((state) => state.user);
@@ -56,6 +59,7 @@ const Video = () => {
   const dispatch = useDispatch();
   const [loaing, setLoading] = useState(false);
   const [desc, setDesc] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { token, _id } = useSelector((state) => state.user.data) || {
     token: null,
@@ -556,18 +560,67 @@ const Video = () => {
                                       <Text fontSize={"xs"}>Download</Text>
                                     </Button>
                                   </VideoDownloader>
-                                  <AddToWatchLater id={id}>
-                                    <Button
-                                      borderRadius="20px"
-                                      size="sm"
-                                      color={"blue.700"}
-                                      variant="outline"
+                                  <Popover isLazy placement="bottom-end">
+                                    <PopoverTrigger>
+                                      <Button
+                                        borderRadius="20px"
+                                        size="sm"
+                                        color={"blue.700"}
+                                        variant="outline"
+                                      >
+                                        <MdOutlinePlaylistAdd />
+                                        &nbsp;
+                                        <Text fontSize={"xs"}>Save</Text>
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                      width=""
+                                      color="white"
+                                      bgColor={"gray.600"}
                                     >
-                                      <MdOutlinePlaylistAdd />
-                                      &nbsp;
-                                      <Text fontSize={"xs"}>Save</Text>
-                                    </Button>
-                                  </AddToWatchLater>
+                                      <Center>
+                                        {" "}
+                                        <PopoverBody>
+                                          {" "}
+                                          <div className="flex flex-col gap-1 justify-center ">
+                                            {" "}
+                                            <AddToWatchLater id={id}>
+                                              <Text
+                                                className="hover:text-blue-400"
+                                                cursor={"pointer"}
+                                                fontSize="md"
+                                                display="flex"
+                                                alignItems="center"
+                                                gap={2}
+                                              >
+                                                <span>
+                                                  <FaRegClock />
+                                                </span>
+                                                <span>Save to WatchLater</span>
+                                              </Text>
+                                            </AddToWatchLater>
+                                            <hr />
+                                            <Text
+                                              className="hover:text-blue-400"
+                                              cursor={"pointer"}
+                                              fontSize="md"
+                                              display="flex"
+                                              alignItems="center"
+                                              gap={2}
+                                              onClick={() => {
+                                                onOpen();
+                                              }}
+                                            >
+                                              <span>
+                                                <CgPlayList />
+                                              </span>
+                                              <span>Add to Playlist</span>
+                                            </Text>
+                                          </div>
+                                        </PopoverBody>
+                                      </Center>
+                                    </PopoverContent>
+                                  </Popover>
                                 </>
                               ) : (
                                 <>
@@ -596,7 +649,7 @@ const Video = () => {
                                             <Text
                                               cursor={"pointer"}
                                               fontSize="md"
-                                              _hover={{ color: "blue" }}
+                                              className="hover:text-blue-400"
                                               display="flex"
                                               alignItems="center"
                                               gap={2}
@@ -619,7 +672,7 @@ const Video = () => {
                                               <Text
                                                 cursor={"pointer"}
                                                 fontSize="md"
-                                                _hover={{ color: "blue" }}
+                                                className="hover:text-blue-400"
                                                 display="flex"
                                                 alignItems="center"
                                                 gap={2}
@@ -633,9 +686,9 @@ const Video = () => {
                                             <hr />
                                             <AddToWatchLater id={id}>
                                               <Text
+                                                className="hover:text-blue-400"
                                                 cursor={"pointer"}
                                                 fontSize="md"
-                                                _hover={{ color: "blue" }}
                                                 display="flex"
                                                 alignItems="center"
                                                 gap={2}
@@ -643,9 +696,26 @@ const Video = () => {
                                                 <span>
                                                   <FaRegClock />
                                                 </span>
-                                                <span>Save</span>
+                                                <span>Save to WatchLater</span>
                                               </Text>
                                             </AddToWatchLater>
+                                            <hr />
+                                            <Text
+                                              className="hover:text-blue-400"
+                                              cursor={"pointer"}
+                                              fontSize="md"
+                                              display="flex"
+                                              alignItems="center"
+                                              gap={2}
+                                              onClick={() => {
+                                                onOpen();
+                                              }}
+                                            >
+                                              <span>
+                                                <CgPlayList />
+                                              </span>
+                                              <span>Add to Playlist</span>
+                                            </Text>
                                           </div>
                                         </PopoverBody>
                                       </Center>
@@ -671,6 +741,13 @@ const Video = () => {
                   />
                 </div>
               </div>
+              <AddToPlayList
+                videoId={id}
+                isOpen={isOpen}
+                onClose={onClose}
+                onOpen={onOpen}
+                user={userData.data}
+              />
             </>
           )}
         </>

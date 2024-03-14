@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
   Tooltip,
   WrapItem,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -24,13 +25,17 @@ import { addWatchLater } from "../../State/Watchlater/watchLaterAction";
 import AddToWatchLater from "./AddToWatchLater";
 import VideoDownloader from "./VideoDownloader";
 import { IoMdDownload } from "react-icons/io";
+import { CgPlayList } from "react-icons/cg";
+import AddToPlayList from "./AddToPlayList";
 
 const RelatedVideo = ({ tags, token, videoId }) => {
   const [videos, setVideos] = useState(null);
+  const [id, setId] = useState(null);
   const toast = useToast();
   const { data: watchLater } = useSelector((state) => state.watchLater);
   const userData = useSelector((state) => state.user.data);
   const dispatch = useDispatch();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const addToWatchLater = (id) => {
     try {
@@ -232,6 +237,21 @@ const RelatedVideo = ({ tags, token, videoId }) => {
                                       </span>
                                     </VideoDownloader>
                                   </Flex>
+                                  <hr />
+                                  <Flex
+                                    alignItems="center"
+                                    gap={2}
+                                    className="hover:text-blue-400"
+                                    onClick={() => {
+                                      setId(video?._id);
+                                      onOpen();
+                                    }}
+                                  >
+                                    <span className="">
+                                      <CgPlayList />
+                                    </span>
+                                    <span className=""> Save to Playlist</span>
+                                  </Flex>
                                 </div>
                               </PopoverBody>
                             </Center>
@@ -248,6 +268,14 @@ const RelatedVideo = ({ tags, token, videoId }) => {
       {videos?.length == 1 && (
         <div className="text-center ">No related Videos </div>
       )}
+
+      <AddToPlayList
+        videoId={id}
+        isOpen={isOpen}
+        onClose={onClose}
+        onOpen={onOpen}
+        user={userData}
+      />
     </div>
   );
 };

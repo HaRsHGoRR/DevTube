@@ -37,6 +37,8 @@ import { FaRegClock } from "react-icons/fa";
 import AddToWatchLater from "../../Components/AddToWatchLater";
 import VideoDownloader from "../../Components/VideoDownloader";
 import { IoMdDownload } from "react-icons/io";
+import AddToPlayList from "../../Components/AddToPlayList";
+import { CgPlayList } from "react-icons/cg";
 
 const WatchLaterPage = () => {
   const {
@@ -48,11 +50,9 @@ const WatchLaterPage = () => {
   const dispatch = useDispatch();
   const { data: user } = useSelector((state) => state.user);
   const toast = useToast();
-  const {
-    isOpen: isEdit,
-    onOpen: onEdit,
-    onClose: onEditClose,
-  } = useDisclosure();
+  const [videoId, setVideoId] = useState(null);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -260,7 +260,7 @@ const WatchLaterPage = () => {
                                           handleDelete(video._id);
                                         }}
                                       >
-                                        <span className="">
+                                        <span className="text-lg">
                                           <MdBlock />
                                         </span>
                                         <span className="text-sm">
@@ -286,6 +286,25 @@ const WatchLaterPage = () => {
                                             <span className=""> Download</span>
                                           </span>
                                         </VideoDownloader>
+                                      </Flex>
+                                      <hr />
+                                      <Flex
+                                        alignItems="center"
+                                        gap={2}
+                                        className="hover:text-blue-400"
+                                        onClick={() => {
+                                          setVideoId(video?._id);
+
+                                          onOpen();
+                                        }}
+                                      >
+                                        <span className="text-lg">
+                                          <CgPlayList />
+                                        </span>
+                                        <span className=" text-sm">
+                                          {" "}
+                                          Save to Playlist
+                                        </span>
                                       </Flex>
                                     </div>
                                   </PopoverBody>
@@ -341,6 +360,13 @@ const WatchLaterPage = () => {
                 );
               })}
           </>
+          <AddToPlayList
+            videoId={videoId}
+            isOpen={isOpen}
+            onClose={onClose}
+            onOpen={onOpen}
+            user={user}
+          />
         </div>
       ) : (
         <>

@@ -19,12 +19,17 @@ import {
   PopoverContent,
   PopoverBody,
   Flex,
+  useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { BiSolidBell } from "react-icons/bi";
 import LandingPage from "./FromNavbar/LandingPage";
 import AddToWatchLater from "../Components/AddToWatchLater";
 import { FaRegClock } from "react-icons/fa";
+import VideoDownloader from "../Components/VideoDownloader";
+import { IoMdDownload } from "react-icons/io";
+import AddToPlayList from "../Components/AddToPlayList";
+import { CgPlayList } from "react-icons/cg";
 
 const User = () => {
   const location = useLocation();
@@ -34,10 +39,14 @@ const User = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [subscribers, setSubscribers] = useState();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [videoId, setVideoId] = useState(null);
 
   const { token, _id } = useSelector((state) => state.user.data) || {
     token: null,
   };
+
+  const { data: userData } = useSelector((state) => state.user);
   const [user, setUser] = useState({});
   const [subscribe, setsubscribe] = useState(false);
   useEffect(() => {
@@ -247,10 +256,14 @@ const User = () => {
                                         {" "}
                                         <PopoverBody>
                                           {" "}
-                                          <div className="flex flex-col gap-1 justify-center hover:text-blue-400 text-sm ">
+                                          <div className="flex flex-col gap-1 justify-center  text-sm ">
                                             {" "}
                                             <AddToWatchLater id={video._id}>
-                                              <Flex alignItems="center" gap={2}>
+                                              <Flex
+                                                alignItems="center"
+                                                className="hover:text-blue-400"
+                                                gap={2}
+                                              >
                                                 <span className="">
                                                   <FaRegClock />
                                                 </span>
@@ -260,6 +273,47 @@ const User = () => {
                                                 </span>
                                               </Flex>
                                             </AddToWatchLater>
+                                            <hr />
+                                            <Flex
+                                              alignItems="center"
+                                              gap={2}
+                                              className="hover:text-blue-400"
+                                            >
+                                              <VideoDownloader
+                                                videoUrl={video?.videoUrl}
+                                                videoName={video?.title}
+                                              >
+                                                {" "}
+                                                <span className="flex justify-center items-center gap-2">
+                                                  <span className="">
+                                                    <IoMdDownload />
+                                                  </span>
+                                                  <span className="">
+                                                    {" "}
+                                                    Download
+                                                  </span>
+                                                </span>
+                                              </VideoDownloader>
+                                            </Flex>
+                                            <hr />
+                                            <Flex
+                                              alignItems="center"
+                                              gap={2}
+                                              className="hover:text-blue-400"
+                                              onClick={() => {
+                                                setVideoId(video?._id);
+
+                                                onOpen();
+                                              }}
+                                            >
+                                              <span className="">
+                                                <CgPlayList />
+                                              </span>
+                                              <span className="">
+                                                {" "}
+                                                Save to Playlist
+                                              </span>
+                                            </Flex>
                                           </div>
                                         </PopoverBody>
                                       </Center>
@@ -273,6 +327,13 @@ const User = () => {
                       );
                     })}
                 </div>
+                <AddToPlayList
+                  videoId={videoId}
+                  isOpen={isOpen}
+                  onClose={onClose}
+                  onOpen={onOpen}
+                  user={userData}
+                />
               </div>
             ) : (
               <>

@@ -15,6 +15,13 @@ import {
   Checkbox,
   ModalHeader,
   ModalCloseButton,
+  FormControl,
+  FormLabel,
+  Input,
+  FormHelperText,
+  Flex,
+  FormErrorMessage,
+  Textarea,
 } from "@chakra-ui/react";
 
 import React, { useEffect, useState } from "react";
@@ -22,6 +29,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addToPlayList,
+  createPlaylist,
   fetchPlaylists,
   removeFromPlayList,
 } from "../../State/Playlist/playlistAction";
@@ -38,7 +46,22 @@ export default function AddToPlayList({
 
   const [loading, setLoading] = useState(false);
   const { data: playlists } = useSelector((state) => state.playlists);
- 
+  const [create, setCreate] = useState(false);
+  const [playlist, setPlaylist] = useState({
+    name: "",
+    desc: "",
+    videoIds: null,
+  });
+
+  const [errors, setErrors] = useState({
+    name: "",
+    desc: "",
+  });
+  const [flags, setFlags] = useState({
+    name: false,
+    desc: false,
+  });
+
   const dispatch = useDispatch();
 
   const addVideoToPlayList = async (playlist, isChecked) => {
@@ -46,7 +69,7 @@ export default function AddToPlayList({
       if (isChecked) {
         await dispatch(addToPlayList(user, videoId, playlist?._id));
         toast({
-          title: "Add to " + playlist?.name,
+          title: "Added to " + playlist?.name,
           status: "success",
           duration: 2000,
           isClosable: true,
@@ -85,6 +108,89 @@ export default function AddToPlayList({
     }
   };
 
+  const createAPlaylist = async () => {
+    setLoading(true);
+
+    if (!playlist.name) {
+      setFlags({ ...flags, name: true });
+      setErrors({ ...errors, name: "Please enter Name." });
+      setLoading(false);
+      return;
+    }
+
+    if (playlist.name.length >= 100) {
+      setFlags({ ...flags, name: true });
+      setErrors({ ...errors, name: "Name is too long!" });
+      setLoading(false);
+      return;
+    }
+
+    if (!playlist.desc) {
+      setFlags({ ...flags, desc: true });
+      setErrors({ ...errors, desc: "Please enter Description," });
+      setLoading(false);
+      return;
+    }
+    if (playlist.desc.length >= 5000) {
+      setFlags({ ...flags, desc: true });
+      setErrors({ ...errors, desc: "Description is too long!" });
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const ids = JSON.stringify([videoId.toString()]);
+
+      await dispatch(
+        createPlaylist(user, {
+          name: playlist.name,
+          desc: playlist.desc,
+          videoIds: ids,
+        })
+      );
+
+      toast({
+        title: "Added to " + playlist?.name,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+      setCreate(false);
+
+      setFlags({
+        name: false,
+        desc: false,
+      });
+      setPlaylist({
+        name: "",
+        desc: "",
+        videoIds: null,
+      });
+      setErrors({
+        name: "",
+        desc: "",
+      });
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Could create " + playlist?.name,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+    }
+    setLoading(false);
+  };
+
+  const handleChange = (e) => {
+    setPlaylist((prev) => {
+      return { ...prev, [e.target.name]: e.target.value };
+    });
+  };
+
+  useEffect(() => {}, [videoId]);
   const OverlayTwo = () => (
     <ModalOverlay
       bg="none"
@@ -106,29 +212,51 @@ export default function AddToPlayList({
     <>
       <Modal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={() => {
+          setCreate(false);
+
+          setFlags({
+            name: false,
+            desc: false,
+          });
+          setPlaylist({
+            name: "",
+            desc: "",
+            videoIds: null,
+          });
+          setErrors({
+            name: "",
+            desc: "",
+          });
+          onClose();
+        }}
         size={"sm"}
         initialFocusRef={null}
         trapFocus={false}
         autoFocus={false}
         finalFocusRef={null}
         returnFocusOnClose={false}
-
-        // scrollBehavior={""}
       >
         {overlay}
         <ModalContent bg="gray.900" color="white" maxWidth={"18.75rem"}>
           <ModalBody width={"auto"}>
             <ModalHeader p={"-5"}>Save Video to...</ModalHeader>
             <ModalCloseButton />
-            <Container borderRadius="lg" borderWidth="1px" py={2} my={4}>
+            <Container
+              borderRadius="lg"
+              borderWidth="1px"
+              py={2}
+              my={4}
+              maxHeight={"13rem"}
+              overflow={"auto"}
+            >
               <VStack
                 pl={1}
                 spacing={5}
                 direction="row"
                 alignItems={"start"}
-                maxHeight={"20rem"}
-                overflow={"auto"}
+                // maxHeight={"20rem"}
+                // overflow={"auto"}
               >
                 {playlists?.map((playlist) => {
                   const isChecked = playlist.videos.some((video) => {
@@ -151,20 +279,128 @@ export default function AddToPlayList({
                     </Checkbox>
                   );
                 })}
+                {videoId}
               </VStack>
             </Container>
             <Center mb={2}>
-              <Button
-                leftIcon={
-                  <span className=" text-2xl">
-                    <IoAdd />
-                  </span>
-                }
-                colorScheme="blue"
-                variant="outline"
-              >
-                Create a new Playlist
-              </Button>
+              {!create ? (
+                <Button
+                  onClick={() => {
+                    setCreate(true);
+                  }}
+                  leftIcon={
+                    <span className=" text-2xl">
+                      <IoAdd />
+                    </span>
+                  }
+                  colorScheme="blue"
+                  variant="outline"
+                >
+                  Create a new Playlist
+                </Button>
+              ) : (
+                <VStack borderRadius="lg" borderWidth="1px" w={"100%"} p={4}>
+                  <FormControl
+                    mt={2}
+                    id="first-name"
+                    variant="floating"
+                    isRequired
+                    isInvalid={flags.name}
+                  >
+                    <Input
+                      name="name"
+                      placeholder=" "
+                      autoComplete="off"
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (e.target.value.length == 0) {
+                          setFlags({ ...flags, name: true });
+                          setErrors({
+                            ...errors,
+                            name: "Name is too short!",
+                          });
+                        } else if (e.target.value.length >= 100) {
+                          setFlags({ ...flags, name: true });
+
+                          setErrors({
+                            ...errors,
+                            name: "Name is too long!",
+                          });
+                        } else {
+                          setFlags({ ...flags, name: false });
+                        }
+                      }}
+                    ></Input>
+                    <FormLabel>
+                      Name:&nbsp;
+                      <span
+                        className={`font-extralight text-sm ${
+                          flags.name ? "text-red-500 " : " "
+                        } `}
+                      >
+                        {playlist.name.length}/100
+                      </span>
+                    </FormLabel>
+                    <FormErrorMessage>{errors.name}</FormErrorMessage>
+                  </FormControl>
+                  <FormControl
+                    mt={2}
+                    id="first-name"
+                    variant="floating"
+                    isRequired
+                    isInvalid={flags.desc}
+                  >
+                    <Textarea
+                      name="desc"
+                      placeholder=" "
+                      autoComplete="off"
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (e.target.value.length == 0) {
+                          setFlags({ ...flags, desc: true });
+                          setErrors({
+                            ...errors,
+                            desc: "Description is too short!",
+                          });
+                        } else if (e.target.value.length >= 5000) {
+                          setFlags({ ...flags, desc: true });
+
+                          setErrors({
+                            ...errors,
+                            desc: "Description is too long!",
+                          });
+                        } else {
+                          setFlags({ ...flags, desc: false });
+                        }
+                      }}
+                    ></Textarea>
+                    <FormLabel>
+                      Description:&nbsp;
+                      <span
+                        className={`font-extralight text-sm ${
+                          flags.desc ? "text-red-500 " : " "
+                        } `}
+                      >
+                        {playlist.desc.length}/5000
+                      </span>
+                    </FormLabel>
+                    <FormErrorMessage>{errors.desc}</FormErrorMessage>
+                  </FormControl>
+
+                  <Button
+                    mt={2}
+                    ml={"auto"}
+                    isLoading={loading}
+                    onClick={() => {
+                      createAPlaylist();
+                    }}
+                    colorScheme="blue"
+                    variant="outline"
+                  >
+                    Create
+                  </Button>
+                </VStack>
+              )}
             </Center>
           </ModalBody>
         </ModalContent>
