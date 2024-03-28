@@ -24,7 +24,7 @@ import "@fortawesome/fontawesome-free/css/all.css";
 import { fetchVideos } from "../State/Videos/videosAction";
 import { fetchWatchLater } from "../State/Watchlater/watchLaterAction";
 import { fetchPlaylists } from "../State/Playlist/playlistAction";
-
+import Playlist from "./Pages/Playlist";
 
 function App() {
   const [showSide, setShowSide] = useState(false);
@@ -70,7 +70,9 @@ function App() {
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/random" element={<RandomPage />} />
           <Route path="/watchlater" element={<WatchLaterPage />} />
-          <Route path="/playlist" element={<PlaylistPage />} />
+          <Route path="/playlists" element={<PlaylistPage />} />
+          <Route path="/playlist" element={<Playlist />} />
+
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/yourvideos" element={<YourVideos />} />
           <Route path="/user" element={<User />} />

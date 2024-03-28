@@ -212,6 +212,9 @@ const WatchLaterPage = () => {
                           src={video?.imgUrl}
                           alt="Thumbnail"
                         />
+                        <span className="absolute  bottom-1 right-1 bg-gray-800 bg-opacity-50 min-w-8 rounded-md text-center text-sm">
+                          {getTime(1000 * video?.length)}
+                        </span>
                       </div>
                       <div className="flex w-full  flex-col justify-between mb-4">
                         <div className=" flex  ">

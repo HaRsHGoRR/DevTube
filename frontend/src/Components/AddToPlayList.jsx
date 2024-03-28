@@ -41,6 +41,7 @@ export default function AddToPlayList({
   onClose,
   videoId,
   user,
+  playlistId,
 }) {
   const toast = useToast();
 
@@ -242,47 +243,64 @@ export default function AddToPlayList({
           <ModalBody width={"auto"}>
             <ModalHeader p={"-5"}>Save Video to...</ModalHeader>
             <ModalCloseButton />
-            <Container
-              borderRadius="lg"
-              borderWidth="1px"
-              py={2}
-              my={4}
-              maxHeight={"13rem"}
-              overflow={"auto"}
-            >
-              <VStack
-                pl={1}
-                spacing={5}
-                direction="row"
-                alignItems={"start"}
-                // maxHeight={"20rem"}
-                // overflow={"auto"}
-              >
-                {playlists?.map((playlist) => {
-                  const isChecked = playlist.videos.some((video) => {
-                    return video?.videoId?._id === videoId;
-                  });
-                  return (
-                    <Checkbox
-                      p={1}
-                      size={"md"}
-                      key={playlist._id}
-                      className=" line-clamp-1"
-                      defaultChecked={isChecked}
-                      onChange={(e) => {
-                        addVideoToPlayList(playlist, e.target.checked);
-                        // console.log(playlist._id);
-                        // console.log();
-                      }}
+            {/* playlists?.length > 0 if not working use this */}
+            {playlists?.some((playlist) => {
+              return playlist?._id == playlistId;
+            })
+              ? playlists?.length == 1
+                ? true
+                : true
+              : true &&
+                playlists?.length > 0 && (
+                  <Container
+                    borderRadius="lg"
+                    borderWidth="1px"
+                    py={2}
+                    my={4}
+                    maxHeight={"13rem"}
+                    overflow={"auto"}
+                  >
+                    <VStack
+                      pl={1}
+                      spacing={5}
+                      direction="row"
+                      alignItems={"start"}
+                      // maxHeight={"20rem"}
+                      // overflow={"auto"}
                     >
-                      <span className="line-clamp-1">{playlist?.name}</span>
-                    </Checkbox>
-                  );
-                })}
-                {videoId}
-              </VStack>
-            </Container>
-            <Center mb={2}>
+                      {playlists?.map((playlist) => {
+                        const isChecked = playlist?.videos?.some((video) => {
+                          return video?.videoId?._id === videoId;
+                        });
+
+                        return (
+                          <Checkbox
+                            style={{
+                              display:
+                                playlistId == playlist._id ? " none " : " ",
+                            }}
+                            p={1}
+                            size={"md"}
+                            key={playlist._id}
+                            className={`line-clamp-1  `}
+                            defaultChecked={isChecked}
+                            onChange={(e) => {
+                              addVideoToPlayList(playlist, e.target.checked);
+                              // console.log(playlist._id);
+                              // console.log();
+                            }}
+                          >
+                            <span className="line-clamp-1">
+                              {playlist?.name}
+                            </span>
+                          </Checkbox>
+                        );
+                      })}
+                      {videoId}
+                    </VStack>
+                  </Container>
+                )}
+            <Center my={2}>
               {!create ? (
                 <Button
                   onClick={() => {

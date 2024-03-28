@@ -28,7 +28,7 @@ import UserSetting from "./UserSetting";
 import { useSelector } from "react-redux";
 
 export default function Sidebar() {
-  const userName=useSelector((state)=>state.user.data.name)
+  const userName = useSelector((state) => state.user.data.name);
   const userImg = useSelector((state) => state.user.data.img);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -142,13 +142,13 @@ export default function Sidebar() {
                 </li>
                 <li onClick={onClose}>
                   <NavLink
-                    to="/playlist"
+                    to="/playlists"
                     className="flex items-center p-2   rounded-lg text-white hover:bg-gray-600 group"
                   >
                     <span className="">
                       <CgPlayList />
                     </span>
-                    <span className="ml-2"> Playlist</span>
+                    <span className="ml-2"> Playlists</span>
                   </NavLink>
                 </li>
                 <li onClick={onClose}>
@@ -200,11 +200,7 @@ export default function Sidebar() {
                     </span>
                     <span className="ml-2"> User</span> */}
                     <WrapItem>
-                      <Avatar
-                        size="sm"
-                        name="Kent Dodds"
-                        src={userImg}
-                      />{" "}
+                      <Avatar size="sm" name="Kent Dodds" src={userImg} />{" "}
                     </WrapItem>
                     <WrapItem ml={2}>{userName}</WrapItem>
                   </div>
@@ -214,7 +210,11 @@ export default function Sidebar() {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
-      <UserSetting  isOpen={userIsOpen} onOpen={userOnOpen} onClose={userOnClose}/>
+      <UserSetting
+        isOpen={userIsOpen}
+        onOpen={userOnOpen}
+        onClose={userOnClose}
+      />
     </>
   );
 }

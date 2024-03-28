@@ -7,8 +7,9 @@ import {
   fetchHistory,
   fetchHistorySuccess,
 } from "../../State/History/historyAction";
+import { useNavigate } from "react-router-dom";
 
-const VideoPlayer = ({ video, token }) => {
+const VideoPlayer = ({ video, token, playlist }) => {
   const { data } = useSelector((state) => state.history);
   const { info } = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ const VideoPlayer = ({ video, token }) => {
   const [time, setTime] = useState(0);
   const videoRef = useRef(null);
   const toast = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     let presentVideo = null;
@@ -76,9 +78,26 @@ const VideoPlayer = ({ video, token }) => {
         <video
           ref={videoRef}
           onPause={handlePause}
-          onEnded={handlePause}
+          onEnded={() => {
+            handlePause();
+
+            if (playlist) {
+              const findIndex = playlist.videos.findIndex(
+                (v) => v?.videoId?._id == video?._id
+              );
+              if (findIndex < playlist.videos.length) {
+                navigate(
+                  `/video?id=${
+                    playlist.videos[(findIndex + 1) % playlist.videos.length]
+                      .videoId?._id
+                  }&playlist=${playlist?._id}`
+                );
+              }
+            }
+          }}
           class=" w-full md:h-[23rem] h-[12rem] object-contain"
           controls
+          autoPlay={playlist}
           src={video.videoUrl}
         ></video>
       </div>

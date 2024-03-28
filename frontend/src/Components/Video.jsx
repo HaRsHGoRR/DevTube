@@ -67,6 +67,9 @@ const Video = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const id = params.get("id");
+  const playlistId = params.get("playlist");
+  const { data: playlists } = useSelector((state) => state.playlists);
+  const [playlist, setPlaylist] = useState(null);
   const toast = useToast();
   const navigate = useNavigate();
   const [videodetails, setVideodetails] = useState({});
@@ -242,8 +245,17 @@ const Video = () => {
       setLoading(false);
     };
 
+    const findPlaylist = playlists?.find(
+      (playlist) => playlist._id == playlistId
+    );
+    if (findPlaylist) {
+      setPlaylist(findPlaylist);
+    } else {
+      setPlaylist(null);
+    }
+
     fetchData();
-  }, [id, token, navigate]);
+  }, [id, token, navigate,playlists]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -273,7 +285,11 @@ const Video = () => {
                 <div className="md:w-8/12 ">
                   {" "}
                   <div className="">
-                    <VideoPlayer video={videodetails} token={token} />
+                    <VideoPlayer
+                      video={videodetails}
+                      token={token}
+                      playlist={playlist}
+                    />
                     {/* <Abc video={videodetails} /> */}
                   </div>
                   <div className=" w-full p-1 ">
@@ -735,6 +751,7 @@ const Video = () => {
                 </div>
                 <div className=" md:w-4/12 ">
                   <RelatedVideo
+                    playlist={playlist}
                     tags={videodetails.tags}
                     token={token}
                     videoId={id}

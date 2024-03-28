@@ -3,10 +3,12 @@ import {
   Button,
   Center,
   Flex,
+  Heading,
   Popover,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  Text,
   Tooltip,
   WrapItem,
   useDisclosure,
@@ -14,28 +16,33 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import getTime from "format-duration";
 import aveta from "aveta";
 import { format } from "timeago.js";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-import { FaRegClock } from "react-icons/fa";
+import { FaChevronDown, FaPlay, FaRegClock } from "react-icons/fa";
 import { addWatchLater } from "../../State/Watchlater/watchLaterAction";
 import AddToWatchLater from "./AddToWatchLater";
 import VideoDownloader from "./VideoDownloader";
-import { IoMdDownload } from "react-icons/io";
+import { IoMdClose, IoMdDownload } from "react-icons/io";
 import { CgPlayList } from "react-icons/cg";
 import AddToPlayList from "./AddToPlayList";
+import { MdDelete } from "react-icons/md";
+import { removeFromPlayList } from "../../State/Playlist/playlistAction";
+import { IoPlay } from "react-icons/io5";
 
-const RelatedVideo = ({ tags, token, videoId }) => {
+const RelatedVideo = ({ tags, token, videoId, playlist }) => {
   const [videos, setVideos] = useState(null);
+  const [showPlaylist, setShowPlaylist] = useState(true);
   const [id, setId] = useState(null);
   const toast = useToast();
   const { data: watchLater } = useSelector((state) => state.watchLater);
   const userData = useSelector((state) => state.user.data);
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
 
   const addToWatchLater = (id) => {
     try {
@@ -75,6 +82,31 @@ const RelatedVideo = ({ tags, token, videoId }) => {
     }
   };
 
+  const removeVideoFromPlaylist = async (videoId, index) => {
+    try {
+      await dispatch(removeFromPlayList(userData, videoId, playlist._id));
+      toast({
+        title: "Removed from " + playlist?.name,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+      navigate(
+        `/video?id=${playlist?.videos?.[index]?.videoId?._id}&playlist=${playlist?._id}`
+      );
+    } catch (error) {
+      toast({
+        title: "Could not remove from " + playlist?.name,
+
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+    }
+  };
+
   const fetchRelatedVideos = async () => {
     try {
       const tag = tags?.join();
@@ -105,6 +137,226 @@ const RelatedVideo = ({ tags, token, videoId }) => {
   }, [videos]);
   return (
     <div className="mt-4 md:mt-0 w-full ">
+      {playlist && (
+        <div
+          className={` ${
+            showPlaylist ? "bg-gray-700 " : "bg-blue-500 "
+          } rounded-md md:w-full w-11/12 mx-auto py-1 mb-4 max-h-[460px] overflow-auto`}
+        >
+          <div className=" flex justify-between items-center">
+            {showPlaylist ? (
+              <div className="">
+                {" "}
+                <NavLink
+                  className={"capitalize hover:text-blue-500"}
+                  to={`/playlist?id=${playlist?._id}`}
+                >
+                  <Heading as="h4" size="md" px={2} pt={2} noOfLines={1}>
+                    {playlist?.name}
+                  </Heading>
+                </NavLink>
+                <Text px={2} py={2} fontSize="sm">
+                  Current Video-{" "}
+                  {playlist?.videos?.findIndex(
+                    (vid) => vid?.videoId?._id == videoId
+                  ) + 1}
+                  /{playlist?.videos?.length}
+                </Text>
+              </div>
+            ) : (
+              <div className="">
+                <Text fontSize="md" noOfLines={1} px={2} pt={0}>
+                  <span className="font-bold">Next:</span> {}
+                  {
+                    playlist?.videos?.[
+                      playlist?.videos?.findIndex(
+                        (vid) => vid?.videoId?._id == videoId
+                      ) + 1
+                    ]?.videoId?.title
+                  }
+                </Text>
+                <Text px={2} py={2} fontSize="sm">
+                  <NavLink
+                    className={"hover:text-gray-300 capitalize"}
+                    to={`/playlist?id=${playlist?._id}`}
+                  >
+                    {playlist?.name}
+                  </NavLink>
+                  -{" "}
+                  {playlist?.videos?.findIndex(
+                    (vid) => vid?.videoId?._id == videoId
+                  ) + 1}
+                  /{playlist?.videos?.length}
+                </Text>
+              </div>
+            )}
+            <div
+              className={`text-2xl mr-4  p-2 rounded-[50%] hover:${
+                showPlaylist ? "text-blue-700 " : "text-blue-700 "
+              } cursor-pointer  hover:${
+                showPlaylist ? "bg-gray-900" : "bg-gray-700"
+              } `}
+              onClick={() => {
+                setShowPlaylist(!showPlaylist);
+              }}
+            >
+              {showPlaylist ? <IoMdClose /> : <FaChevronDown />}
+            </div>
+          </div>
+          {showPlaylist && (
+            <>
+              {" "}
+              {playlist?.videos?.map((video, index) => {
+                const isCurrentVideo = video?.videoId?._id == videoId;
+                return (
+                  <NavLink
+                    to={`/video?id=${video?.videoId?._id}&playlist=${playlist?._id}`}
+                    className={` ${
+                      isCurrentVideo ? "bg-gray-900 " : " "
+                    } rounded-md cursor-pointer hover:bg-gray-800 p-2 mb-3 mx-2  flex justify-between items-start gap-2`}
+                  >
+                    <div className="my-auto ">
+                      {" "}
+                      {isCurrentVideo ? <IoPlay /> : index + 1}
+                    </div>
+                    <div className="w-[100px] h-[56px] relative shrink-0 ">
+                      <img
+                        className="w-full h-full object-fill rounded-lg"
+                        src={video?.videoId?.imgUrl}
+                        alt=""
+                      />
+                      <span className="absolute  bottom-1 right-1 bg-gray-800 bg-opacity-50 min-w-8 rounded-md text-center text-sm">
+                        {getTime(1000 * video?.videoId?.length)}
+                      </span>
+                    </div>
+                    <div className=" w-full flex flex-col justify-between   ">
+                      <Text
+                        textTransform={"capitalize"}
+                        as="b"
+                        noOfLines={2}
+                        fontSize={"sm"}
+                      >
+                        {video?.videoId?.title}
+                      </Text>
+                      <div className=" flex  flex-col items-start  ">
+                        <NavLink to={`/user?id=${video.videoId?.userId?._id}`}>
+                          <Text fontSize="sm" _hover={{ color: "blue.500" }}>
+                            {video?.videoId?.userId?.name}{" "}
+                          </Text>
+                        </NavLink>
+                      </div>
+                    </div>
+                    <div
+                      className="my-auto hover:text-blue-700 text-xl"
+                      onClick={(e) => {
+                        e.preventDefault();
+                      }}
+                    >
+                      {/* <BsThreeDotsVertical /> */}
+
+                      <Popover isLazy placement="bottom-end">
+                        <PopoverTrigger>
+                          <Button variant="unstyled" sx={{ all: "unset" }}>
+                            <BsThreeDotsVertical />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          width=""
+                          color="white"
+                          bgColor={"gray.600"}
+                        >
+                          <Center>
+                            {" "}
+                            <PopoverBody>
+                              {" "}
+                              <div className="flex flex-col gap-1 justify-center ">
+                                {" "}
+                                <Text
+                                  className="hover:text-red-400"
+                                  cursor={"pointer"}
+                                  fontSize="md"
+                                  display="flex"
+                                  alignItems="center"
+                                  gap={2}
+                                  onClick={() => {
+                                    removeVideoFromPlaylist(
+                                      video?.videoId?._id,
+                                      (index + 1) % playlist?.videos?.length
+                                    );
+                                  }}
+                                >
+                                  <span>
+                                    <MdDelete />
+                                  </span>
+                                  <span>Remove from {playlist?.name}</span>
+                                </Text>
+                                <hr />
+                                <VideoDownloader
+                                  videoUrl={video?.videoId?.videoUrl}
+                                  videoName={video?.videoId?.title}
+                                >
+                                  <Text
+                                    cursor={"pointer"}
+                                    fontSize="md"
+                                    className="hover:text-blue-400"
+                                    display="flex"
+                                    alignItems="center"
+                                    gap={2}
+                                  >
+                                    <span>
+                                      <IoMdDownload />
+                                    </span>{" "}
+                                    <span>Download</span>
+                                  </Text>
+                                </VideoDownloader>
+                                <hr />
+                                <AddToWatchLater id={video?.videoId?._id}>
+                                  <Text
+                                    className="hover:text-blue-400"
+                                    cursor={"pointer"}
+                                    fontSize="md"
+                                    display="flex"
+                                    alignItems="center"
+                                    gap={2}
+                                  >
+                                    <span>
+                                      <FaRegClock />
+                                    </span>
+                                    <span>Save to WatchLater</span>
+                                  </Text>
+                                </AddToWatchLater>
+                                <hr />
+                                <Text
+                                  className="hover:text-blue-400"
+                                  cursor={"pointer"}
+                                  fontSize="md"
+                                  display="flex"
+                                  alignItems="center"
+                                  gap={2}
+                                  onClick={() => {
+                                    setVideoId(video?.videoId?._id);
+                                    addOpen();
+                                  }}
+                                >
+                                  <span>
+                                    <CgPlayList />
+                                  </span>
+                                  <span>Add to Other Playlist</span>
+                                </Text>
+                              </div>
+                            </PopoverBody>
+                          </Center>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </NavLink>
+                );
+              })}
+            </>
+          )}
+        </div>
+      )}
+
       {videos &&
         videos.map((video) => {
           if (video._id != videoId)

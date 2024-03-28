@@ -105,7 +105,7 @@ export const ShowVideos = ({ type }) => {
                           class="hover:rounded-none  rounded-lg transition-all 0.3s ease-in-out  border-white border-[1px]  object-fill w-full h-full  "
                           src={video.imgUrl}
                         ></img>
-                        <span className="absolute  bottom-0 right-1 bg-gray-800 bg-opacity-50 min-w-8 rounded-md text-center text-sm">
+                        <span className="absolute  bottom-1 right-1 bg-gray-800 bg-opacity-50 min-w-8 rounded-md text-center text-sm">
                           {getTime(1000 * video.length)}
                         </span>
                       </div>

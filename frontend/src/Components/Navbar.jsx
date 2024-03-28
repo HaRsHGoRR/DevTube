@@ -3,7 +3,15 @@ import Sidebar from "./Sidebar";
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import RegLog from "./RegLog";
-import { Button, Center, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  Center,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Kbd,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { IoMdClose } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { FiLogOut } from "react-icons/fi";
@@ -40,6 +48,24 @@ const Navbar = () => {
     // window.location.replace();
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "k" && event.ctrlKey) {
+        event.preventDefault();
+        if (isSearch) {
+          onSearchClose();
+        } else {
+          onSearch();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isSearch]);
   return (
     <>
       <div
@@ -120,7 +146,7 @@ const Navbar = () => {
                       name="search"
                       id="search-navbar"
                       className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Search"
+                      placeholder="Crtl + K "
                     />
                   </div>
                   <div className="hidden md:block">

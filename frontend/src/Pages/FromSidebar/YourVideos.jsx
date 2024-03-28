@@ -191,7 +191,7 @@ const YourVideos = () => {
                           src={video?.imgUrl}
                           alt={video.title}
                         />
-                        <span className="absolute  bottom-0 right-1 bg-gray-800 bg-opacity-50 min-w-8 rounded-md text-center text-sm">
+                        <span className="absolute  bottom-1 right-1 bg-gray-800 bg-opacity-50 min-w-8 rounded-md text-center text-sm">
                           {getTime(1000 * video?.length)}
                         </span>
                       </div>
@@ -214,7 +214,7 @@ const YourVideos = () => {
                               event.preventDefault();
                             }}
                           >
-                            <Popover isLazy placement="bottom">
+                            <Popover isLazy placement="bottom-end">
                               <PopoverTrigger>
                                 <Button
                                   variant="unstyled"
@@ -238,33 +238,41 @@ const YourVideos = () => {
                                         {" "}
                                         <Flex alignItems="center">
                                           <span
-                                            className="hover:text-green-400"
+                                            className="hover:text-green-400 flex items-center gap-2"
                                             onClick={() => {
-                                              // console.log(video);
                                               setEditVideo(video);
                                               onEdit();
                                             }}
                                           >
                                             {" "}
                                             <MdEdit />
+                                            <span className="text-sm">
+                                              Edit
+                                            </span>
                                           </span>
                                         </Flex>
                                         <hr />
                                       </>
                                       <Flex alignItems="center">
                                         <span
-                                          className="hover:text-red-400"
+                                          className="hover:text-red-400 flex items-center gap-2"
                                           onClick={() => {
                                             handleDelete(video._id);
                                           }}
                                         >
                                           <MdDelete />
+                                          <span className="text-sm">
+                                            Delete
+                                          </span>
                                         </span>
                                       </Flex>
                                       <hr />
                                       <AddToWatchLater id={video?._id}>
-                                        <span className="hover:text-blue-400">
+                                        <span className="hover:text-blue-400 flex items-center gap-2">
                                           <FaRegClock />
+                                          <span className="text-sm">
+                                            Save to Watch Later
+                                          </span>
                                         </span>
                                       </AddToWatchLater>
                                       <hr />
@@ -278,8 +286,11 @@ const YourVideos = () => {
                                           videoName={video?.title}
                                         >
                                           {" "}
-                                          <span className=" hover:text-blue-400">
+                                          <span className=" hover:text-blue-400 flex items-center gap-2">
                                             <IoMdDownload />
+                                            <span className="text-sm">
+                                              Download
+                                            </span>
                                           </span>
                                         </VideoDownloader>
                                       </Flex>
@@ -293,8 +304,11 @@ const YourVideos = () => {
                                           onOpen();
                                         }}
                                       >
-                                        <span className=" hover:text-blue-400">
+                                        <span className=" hover:text-blue-400 flex items-center gap-2">
                                           <CgPlayList />
+                                          <span className="text-sm">
+                                            Add to Playlist
+                                          </span>
                                         </span>
                                       </Flex>
                                     </div>
