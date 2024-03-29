@@ -1,6 +1,10 @@
+
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://devtube-main.onrender.com/$1" },
+    { "source": "/api/(.*)", "destination": "https://devtube-fz55.onrender.com/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
+
+
+
