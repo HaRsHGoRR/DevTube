@@ -93,6 +93,7 @@ const Login = ({ onClose }) => {
       setLoading(false);
       onClose();
     } catch (error) {
+      console.log(error);
       toast({
         title: "Failed to Login.",
         description: error.response.data.message,

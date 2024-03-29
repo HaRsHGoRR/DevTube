@@ -131,7 +131,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-
+  console.log("hiiiiii");
   if (!email || !password) {
     res.status(404);
     throw new Error("Please enter all the fields.");
