@@ -19,11 +19,14 @@ const Contact = () => {
     const subject = encodeURIComponent('Devtube Support');
     const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nMessage: ${message}`);
     
-    // Construct the Gmail URL with pre-filled recipient, subject, and body
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${subject}&body=${body}`;
     
-    // Open Gmail URL in a new tab
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (isMobile) {
+    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+  } else {
     window.open(gmailUrl);
+  }
 
     // Clear form fields after submission
     setName('');

@@ -38,33 +38,20 @@ const AboutUs = () => {
               <h3>Abhay Gohel</h3>
               ----------------
               <p>
-                Description of Developer 1 Lorem ipsum dolor sit amet,
-                consectetur adipiscing elit.
+              Ninja Full Stack Developer
               </p>
               <div className="social-media">
-                <a href="https://facebook.com">
-                  <i
-                    className="fab fa-facebook"
-                    style={{ color: "#1877F2" }}
-                  ></i>{" "}
-                  Facebook
-                </a>
-                <a href="https://twitter.com">
-                  <i
-                    className="fab fa-twitter"
-                    style={{ color: "#1DA1F2" }}
-                  ></i>{" "}
-                  Twitter
-                </a>
-                <a href="https://linkedin.com">
+                <a href="https://www.linkedin.com/in/abhay-gohel-880994268">
                   <i
                     className="fab fa-linkedin"
                     style={{ color: "#0077B5" }}
                   ></i>{" "}
+                  <br></br>
                   LinkedIn
                 </a>
-                <a href="https://github.com/yourusername">
+                <a href="https://github.com/abhay14gohel">
                   <i className="fab fa-github" style={{ color: "#ffffff" }}></i>{" "}
+                  <br></br>
                   GitHub
                 </a>
               </div>
@@ -80,33 +67,20 @@ const AboutUs = () => {
               <h3>Harsh Gor</h3>
               ----------------
               <p>
-                Description of Developer 2 Lorem ipsum dolor sit amet,
-                consectetur adipiscing elit.
+                Wizard Full Stack Developer
               </p>
               <div className="social-media">
-                <a href="https://facebook.com">
-                  <i
-                    className="fab fa-facebook"
-                    style={{ color: "#1877F2" }}
-                  ></i>{" "}
-                  Facebook
-                </a>
-                <a href="https://twitter.com">
-                  <i
-                    className="fab fa-twitter"
-                    style={{ color: "#1DA1F2" }}
-                  ></i>{" "}
-                  Twitter
-                </a>
-                <a href="https://linkedin.com">
+                <a href="https://www.linkedin.com/in/harsh-gor-7095b2262">
                   <i
                     className="fab fa-linkedin"
                     style={{ color: "#0077B5" }}
                   ></i>{" "}
+                  <br></br>
                   LinkedIn
                 </a>
-                <a href="https://github.com/yourusername">
+                <a href="https://github.com/HaRsHGoRR">
                   <i className="fab fa-github" style={{ color: "#ffffff" }}></i>{" "}
+                  <br></br>
                   GitHub
                 </a>
               </div>
