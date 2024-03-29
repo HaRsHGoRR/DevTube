@@ -37,9 +37,9 @@ const AboutUs = () => {
             <div className="content">
               <h3>Abhay Gohel</h3>
               ----------------
-              <p>
+              <p><b>
               Ninja Full Stack Developer
-              </p>
+              </b></p>
               <div className="social-media">
                 <a href="https://www.linkedin.com/in/abhay-gohel-880994268">
                   <i
@@ -66,9 +66,9 @@ const AboutUs = () => {
             <div className="content">
               <h3>Harsh Gor</h3>
               ----------------
-              <p>
-                Wizard Full Stack Developer
-              </p>
+              <p><b>
+              Full Stack Developer
+                </b>   </p>
               <div className="social-media">
                 <a href="https://www.linkedin.com/in/harsh-gor-7095b2262">
                   <i
