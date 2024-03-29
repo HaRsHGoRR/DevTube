@@ -47,12 +47,24 @@ const Seach = ({ isOpen, onClose, onOpen }) => {
   const finalRef = React.useRef(null);
   const [search, setSearch] = useState(null);
   const [result, setResult] = useState(null);
+  const [a, setA] = useState(null);
 
   const { data: user } = useSelector((state) => state.user);
 
   const toast = useToast();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    // implemented debouncing.
+    let timeOut;
+    if (a) {
+      timeOut = setTimeout(() => {
+        handleSearch(a);
+      }, 1000);
+    }
+    return () => {
+      clearTimeout(timeOut);
+    };
+  }, [a]);
 
   const handleSearch = async (a) => {
     try {
@@ -115,7 +127,8 @@ const Seach = ({ isOpen, onClose, onOpen }) => {
                   if (e.target.value.length == 0) {
                     setResult(null);
                   } else {
-                    handleSearch(e.target.value);
+                    // handleSearch(e.target.value);
+                    setA(e.target.value);
                   }
                 }}
                 spellCheck={false}

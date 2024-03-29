@@ -22,7 +22,13 @@ connectDB();
 // accepting data in JSON
 app.use(express.json());
 
-app.use(cors());
+// allowing cors origin
+const corsAllow={
+  origin:"https://dev-tube-main.vercel.app/",
+  methods:"PUT,GET,UPDATE,POST,PATCH,DELETE,HEAD",
+  credentials:true
+}
+app.use(cors(corsAllow));
 
 app.get("/", (req, res) => {
   res.send("hello from server.");

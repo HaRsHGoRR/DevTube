@@ -89,11 +89,9 @@ const Login = ({ onClose }) => {
       await dispatch(fetchWatchLater(data));
       await dispatch(fetchPlaylists(data));
 
-
       setLoading(false);
       onClose();
     } catch (error) {
-      console.log(error);
       toast({
         title: "Failed to Login.",
         description: error.response.data.message,
