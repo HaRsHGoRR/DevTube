@@ -5,34 +5,30 @@ import {
   FormControl,
   FormLabel,
   Input,
-  InputGroup,
-  VStack,
   WrapItem,
   useToast,
 } from '@chakra-ui/react';
-import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
 const Contact = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const toast = useToast();
 
-  const handleClick = () => {
-    setShowPassword(!showPassword);
-  };
+  const handleSubmit = () => {
+    const recipient = encodeURIComponent('devtube102214@gmail.com');
+    const subject = encodeURIComponent('Devtube Support');
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nMessage: ${message}`);
+    
+    // Construct the Gmail URL with pre-filled recipient, subject, and body
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${subject}&body=${body}`;
+    
+    // Open Gmail URL in a new tab
+    window.open(gmailUrl);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here you can perform form submission logic
-    // For demonstration, let's just show a toast message
-    toast({
-      title: 'Form Submitted',
-      status: 'success',
-      duration: 2000,
-      isClosable: true,
-    });
+    // Clear form fields after submission
+    setName('');
+    setEmail('');
+    setMessage('');
   };
 
   return (
@@ -46,16 +42,16 @@ const Contact = () => {
       <Box
         maxW="md"
         w="full"
-        bg="rgba(0, 0, 0, 0.2)" // Slightly lighter background color with some transparency
+        bg="rgba(0, 0, 0, 0.2)"
         border="1px solid"
-        borderColor="white" // White border color
+        borderColor="white"
         borderRadius="10px"
         p="20px"
       >
         <Box textAlign="center" mb="6">
-          <h2 className="text-xl font-semibold text-white">Contact Us</h2> {/* White text color */}
+          <h2 className="text-xl font-semibold text-white">Contact Us</h2>
         </Box>
-        <form onSubmit={handleSubmit}>
+        <form>
           <WrapItem mb="4">
             <FormControl id="name" isRequired>
               <FormLabel>Name:</FormLabel>
@@ -63,7 +59,8 @@ const Contact = () => {
                 type="text"
                 placeholder="Your Name"
                 required
-                color="white" // White text color
+                color="white"
+                value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </FormControl>
@@ -75,7 +72,8 @@ const Contact = () => {
                 type="email"
                 placeholder="Your Email"
                 required
-                color="white" // White text color
+                color="white"
+                value={email}
                 onChange={(e) => setEmail(e.target.value.toLowerCase())}
               />
             </FormControl>
@@ -87,7 +85,8 @@ const Contact = () => {
                 type="text"
                 placeholder="Your Message"
                 required
-                color="white" // White text color
+                color="white"
+                value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
             </FormControl>
@@ -98,8 +97,9 @@ const Contact = () => {
               color="white"
               _hover={{ bg: 'blue.600' }}
               fontWeight="bold"
-              type="submit"
+              type="button"
               width="100%"
+              onClick={handleSubmit}
             >
               Submit
             </Button>
