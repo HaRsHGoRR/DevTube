@@ -8,6 +8,7 @@ const userRoutes = require("./routes/userRoutes");
 const videoRoutes = require("./routes/videoRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const playlistRoutes=require("./routes/playlistRoutes")
+const cors=require("cors")
 
 // creating server
 const app = express();
@@ -20,6 +21,8 @@ connectDB();
 
 // accepting data in JSON
 app.use(express.json());
+
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("hello from server.");
