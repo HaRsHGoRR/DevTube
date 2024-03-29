@@ -245,6 +245,14 @@ const Video = () => {
       setLoading(false);
     };
 
+    fetchData();
+  }, [id, token, navigate]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const findPlaylist = playlists?.find(
       (playlist) => playlist._id == playlistId
     );
@@ -252,14 +260,9 @@ const Video = () => {
       setPlaylist(findPlaylist);
     } else {
       setPlaylist(null);
+    
     }
-
-    fetchData();
-  }, [id, token, navigate,playlists]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  }, [playlists]);
   return (
     <>
       {token ? (
@@ -640,15 +643,17 @@ const Video = () => {
                                 </>
                               ) : (
                                 <>
+                                  {" "}
                                   <Popover isLazy placement="bottom-end">
                                     <PopoverTrigger>
                                       <Button
                                         size="sm"
-                                        color={"blue.700"}
-                                        variant="outline"
-                                        rounded={"full"}
+                                        variant="unstyled"
+                                        sx={{ all: "unset" }}
                                       >
-                                        <BsThreeDots />
+                                        <div className="cursor-pointer hover:text-blue-500 p-2 hover:bg-white rounded-[50%]">
+                                          <BsThreeDots />
+                                        </div>
                                       </Button>
                                     </PopoverTrigger>
                                     <PopoverContent
