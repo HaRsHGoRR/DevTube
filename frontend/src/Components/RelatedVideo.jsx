@@ -192,9 +192,9 @@ const RelatedVideo = ({ tags, token, videoId, playlist }) => {
             )}
             <div
               className={`text-2xl mr-4  p-2 rounded-[50%] hover:${
-                showPlaylist ? "text-blue-700 " : "text-blue-700 "
+                showPlaylist ? "text-blue-700" : "text-blue-700"
               } cursor-pointer  hover:${
-                showPlaylist ? "bg-gray-900" : "bg-gray-700"
+                showPlaylist ? "bg-white" : "bg-white"
               } `}
               onClick={() => {
                 setShowPlaylist(!showPlaylist);

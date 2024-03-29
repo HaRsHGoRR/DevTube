@@ -764,6 +764,8 @@ const analysis = asyncHandler(async (req, res) => {
       // Include user details (username) and their percentage in the response
       percentageDetails.push({
         username: videoData.userId.name,
+        userImg:videoData.userId.img,
+        userId:videoData.userId?._id,
         percentageWatched: percentageWatched.toFixed(2), // Adjust decimal places as needed
       });
     });
