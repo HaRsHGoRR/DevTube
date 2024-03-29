@@ -38,7 +38,7 @@ const AboutUs = () => {
               <h3>Abhay Gohel</h3>
               ----------------
               <p><b>
-              Ninja Full Stack Developer
+              Full Stack Developer
               </b></p>
               <div className="social-media">
                 <a href="https://www.linkedin.com/in/abhay-gohel-880994268">
