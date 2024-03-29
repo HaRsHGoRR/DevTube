@@ -65,13 +65,19 @@ const Signup = ({ onClose }) => {
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
       const data = new FormData();
       data.append("file", pics);
-      data.append("upload_preset", "chatty");
-      data.append("cloud_name", "ddao02zyw");
+      data.append(
+        "upload_preset",
+        import.meta.env.VITE_cloudinaryUploadPresent
+      );
+      data.append("cloud_name", import.meta.env.VITE_cloudinaryCloudName);
 
-      fetch("https://api.cloudinary.com/v1_1/ddao02zyw/image/upload", {
-        method: "post",
-        body: data,
-      })
+      fetch(
+        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_cloudinaryCloudName}/image/upload`,
+        {
+          method: "post",
+          body: data,
+        }
+      )
         .then((res) => res.json())
         .then((data) => {
           setpic(data.url.toString());
@@ -190,8 +196,6 @@ const Signup = ({ onClose }) => {
       await dispatch(fetchWatchLater(data));
       await dispatch(fetchPlaylists(data));
 
-
-
       setLoading(false);
       onClose();
       toast({
@@ -247,7 +251,9 @@ const Signup = ({ onClose }) => {
             setName(e.target.value);
           }}
         ></Input>
-        <FormLabel>Name:</FormLabel>
+        <FormLabel>
+          Name: 
+        </FormLabel>
       </FormControl>
       <FormControl mt={3} variant="floating" id="email" isRequired>
         <Input

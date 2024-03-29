@@ -140,7 +140,7 @@ const RelatedVideo = ({ tags, token, videoId, playlist }) => {
       {playlist && (
         <div
           className={` ${
-            showPlaylist ? "bg-gray-700 " : "bg-blue-500 "
+            showPlaylist ? "bg-gray-700 " : "bg-blue-800 "
           } rounded-md md:w-full w-11/12 mx-auto py-1 mb-4 max-h-[460px] overflow-auto`}
         >
           <div className=" flex justify-between items-center">
@@ -165,7 +165,13 @@ const RelatedVideo = ({ tags, token, videoId, playlist }) => {
               </div>
             ) : (
               <div className="">
-                <Text fontSize="md" noOfLines={1} px={2} pt={0}>
+                <Text
+                  fontSize="md "
+                  textTransform={"capitalize"}
+                  noOfLines={1}
+                  px={2}
+                  pt={0}
+                >
                   <span className="font-bold">Next:</span> {}
                   {
                     playlist?.videos?.[
