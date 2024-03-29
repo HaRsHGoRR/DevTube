@@ -185,7 +185,6 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
         imgUrl: "",
         length: 0,
       });
-     
 
       setImg(null);
       setimgProcess(0);
@@ -197,13 +196,13 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
         desc: false,
         tags: false,
       });
-     
+
       setErrors({
         title: "",
         desc: "",
         tags: "",
       });
-      
+
       onClose();
 
       await dispatch(fetchVideosSuccess(data));
@@ -553,7 +552,7 @@ const UploadVideo = ({ isOpen, onClose, onOpen }) => {
                           } rounded-lg object-fill ${
                             loading ? " cursor-no-drop " : " cursor-pointer "
                           }`}
-                          src={img || "../../public/uploadImg.jpg"}
+                          src={img || "uploadImg.jpg"}
                           alt="Click Here to upload Thumbnail"
                         />
                       </label>

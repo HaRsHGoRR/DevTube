@@ -149,7 +149,7 @@ export default function RegLog({ isOpen, onOpen, onClose }) {
                     isLoading={googleLoad}
                     leftIcon={
                       <img
-                        src="../../public/icons8-google-48.png"
+                        src="icons8-google-48.png"
                         width="24"
                         alt=""
                       />

@@ -140,7 +140,7 @@ const Playlist = () => {
                     className="object-fill w-[336px] h-[189px] rounded-md"
                     src={
                       playlist?.videos?.[0]?.videoId?.imgUrl ||
-                      "../../public/grayImage.png"
+                      "grayImage.png"
                     }
                     alt=""
                   />

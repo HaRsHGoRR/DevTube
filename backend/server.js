@@ -24,7 +24,7 @@ app.use(express.json());
 
 // allowing cors origin
 const corsAllow={
-  origin:"https://dev-tube-main.vercel.app/",
+  origin:"https://devtube-zeta.vercel.app/",
   methods:"PUT,GET,UPDATE,POST,PATCH,DELETE,HEAD",
   credentials:true
 }

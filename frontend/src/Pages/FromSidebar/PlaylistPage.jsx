@@ -204,7 +204,7 @@ const PlaylistPage = () => {
             `}
                           src={
                             playlist.videos?.[0]?.videoId?.imgUrl ||
-                            "../../../public/grayImage.png"
+                            "grayImage.png"
                           }
                           alt={playlist.name}
                         />
