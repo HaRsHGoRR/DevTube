@@ -58,7 +58,7 @@ const AnalyticsPage = () => {
         config
       );
       setData(fetchedData);
-      console.log(fetchedData);
+      // console.log(fetchedData);
     } catch (error) {
       toast({
         title: "Could load Data.",
@@ -79,7 +79,7 @@ const AnalyticsPage = () => {
           </Heading>
           <div
             className={` ${
-              showPlaylist ? "bg-gray-700 " : "bg-blue-500 "
+              showPlaylist ? "bg-gray-700 " : "bg-blue-800 "
             } rounded-md md:w-full w-11/12 md:mt-5 mx-auto py-2 mb-4 max-h-[460px] overflow-auto`}
           >
             <div
@@ -162,7 +162,7 @@ const AnalyticsPage = () => {
             <div className="cursor-default">
               <TableContainer>
                 {" "}
-                <Table size={{base:"sm",md:"md"}} variant="simple">
+                <Table size={{ base: "sm", md: "md" }} variant="simple">
                   {/* <TableCaption>View History of {video?.title}</TableCaption> */}
                   <Thead>
                     <Tr>

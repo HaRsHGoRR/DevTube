@@ -124,13 +124,21 @@ const UserSetting = ({ isOpen, onOpen, onClose }) => {
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
       const data = new FormData();
       data.append("file", pics);
-      data.append("upload_preset", "chatty");
-      data.append("cloud_name", "ddao02zyw");
+      data.append(
+        "upload_preset",
+        import.meta.env.VITE_cloudinaryUploadPresent
+      );
+      data.append("cloud_name", import.meta.env.VITE_cloudinaryCloudName);
 
-      fetch("https://api.cloudinary.com/v1_1/ddao02zyw/image/upload", {
-        method: "post",
-        body: data,
-      })
+      fetch(
+        `https://api.cloudinary.com/v1_1/${
+          import.meta.env.VITE_cloudinaryCloudName
+        }/image/upload`,
+        {
+          method: "post",
+          body: data,
+        }
+      )
         .then((res) => res.json())
         .then((data) => {
           setpic(data.url.toString());
@@ -247,7 +255,7 @@ const UserSetting = ({ isOpen, onOpen, onClose }) => {
       toast({
         title: "Could not change Password.",
         status: "error",
-        description:error.response.data.message,
+        description: error.response.data.message,
         duration: 2000,
         isClosable: true,
         position: "bottom-left",
@@ -291,7 +299,6 @@ const UserSetting = ({ isOpen, onOpen, onClose }) => {
       const config = {
         headers: {
           "Content-type": "application/json",
-          
         },
       };
 
@@ -316,7 +323,7 @@ const UserSetting = ({ isOpen, onOpen, onClose }) => {
     } catch (error) {
       toast({
         title: "Could not change Password.",
-        description:error.response.data.message,
+        description: error.response.data.message,
         status: "error",
         duration: 2000,
         isClosable: true,
@@ -414,7 +421,7 @@ const UserSetting = ({ isOpen, onOpen, onClose }) => {
                     >
                       Update
                     </Button>
-                   </Box>
+                  </Box>
 
                   {!user.google && (
                     <Box
