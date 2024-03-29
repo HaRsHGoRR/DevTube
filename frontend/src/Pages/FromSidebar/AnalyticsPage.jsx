@@ -5,6 +5,7 @@ import LandingPage from "../FromNavbar/LandingPage";
 import {
   Avatar,
   Center,
+  Spinner,
   TableCaption,
   TableContainer,
   Tbody,
@@ -31,6 +32,7 @@ const AnalyticsPage = () => {
   const [video, setVideo] = useState(null);
   const toast = useToast();
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -47,6 +49,7 @@ const AnalyticsPage = () => {
   }, [video]);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const config = {
         headers: {
@@ -68,6 +71,7 @@ const AnalyticsPage = () => {
         position: "bottom-left",
       });
     }
+    setLoading(false);
   };
 
   return (
@@ -158,51 +162,73 @@ const AnalyticsPage = () => {
               </div>
             )}
           </div>
-          {data?.length > 0 && (
-            <div className="cursor-default">
-              <TableContainer>
-                {" "}
-                <Table size={{ base: "sm", md: "md" }} variant="simple">
-                  {/* <TableCaption>View History of {video?.title}</TableCaption> */}
-                  <Thead>
-                    <Tr>
-                      <Th color={"white"}>Sr.</Th>
-                      <Th color={"white"}>User</Th>
-                      <Th color={"white"} isNumeric>
-                        Watch Percentage{" "}
-                      </Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {data?.map((d, i) => {
-                      return (
-                        <Tr className={`${i % 2 == 0 ? "bg-gray-800" : ""} `}>
-                          <Th color={"white"}>{i + 1}</Th>
-                          <Th color={"white"} _hover={{ color: "blue.500" }}>
-                            <NavLink
-                              to={`/user?id=${d?.userId}`}
-                              className={"flex items-center gap-2"}
-                            >
-                              <WrapItem>
-                                <Avatar
-                                  size="sm"
-                                  name="Kent Dodds"
-                                  src={d?.userImg}
-                                />{" "}
-                              </WrapItem>
-                              {d?.username}
-                            </NavLink>
-                          </Th>
+          {!loading ? (
+            <>
+              {" "}
+              {data?.length > 0 && (
+                <div className="cursor-default">
+                  <TableContainer>
+                    {" "}
+                    <Table size={{ base: "sm", md: "md" }} variant="simple">
+                      {/* <TableCaption>View History of {video?.title}</TableCaption> */}
+                      <Thead>
+                        <Tr>
+                          <Th color={"white"}>Sr.</Th>
+                          <Th color={"white"}>User</Th>
                           <Th color={"white"} isNumeric>
-                            {d?.percentageWatched}%{" "}
+                            Watch Percentage{" "}
                           </Th>
                         </Tr>
-                      );
-                    })}
-                  </Tbody>
-                </Table>
-              </TableContainer>
-            </div>
+                      </Thead>
+                      <Tbody>
+                        {data?.map((d, i) => {
+                          return (
+                            <Tr
+                              className={`${i % 2 == 0 ? "bg-gray-800" : ""} `}
+                            >
+                              <Th color={"white"}>{i + 1}</Th>
+                              <Th
+                                color={"white"}
+                                _hover={{ color: "blue.500" }}
+                              >
+                                <NavLink
+                                  to={`/user?id=${d?.userId}`}
+                                  className={"flex items-center gap-2"}
+                                >
+                                  <WrapItem>
+                                    <Avatar
+                                      size="sm"
+                                      name="Kent Dodds"
+                                      src={d?.userImg}
+                                    />{" "}
+                                  </WrapItem>
+                                  {d?.username}
+                                </NavLink>
+                              </Th>
+                              <Th color={"white"} isNumeric>
+                                {d?.percentageWatched}%{" "}
+                              </Th>
+                            </Tr>
+                          );
+                        })}
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <Center>
+                <Spinner
+                  thickness="4px"
+                  speed="0.65s"
+                  emptyColor="gray.200"
+                  color="blue.700"
+                  size="xl"
+                />
+              </Center>
+            </>
           )}
           {data?.length == 0 && (
             <Center>
