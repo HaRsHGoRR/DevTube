@@ -1,0 +1,6 @@
+
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://devtube-fz55.onrender.com/$1" }
+  ]
+}
